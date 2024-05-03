@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module PandasModel</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">PandasModel</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cp-gar%5Cpycharmprojects%5Cdepenses%5Cpandasmodel.py">c:\users\p-gar\pycharmprojects\depenses\pandasmodel.py</a></td></tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="pandas.html">pandas</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a>(<a href="PySide6.QtCore.html#QAbstractItemModel">PySide6.QtCore.QAbstractItemModel</a>)
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="PandasModel.html#PandasModel">PandasModel</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="PandasModel">class <strong>PandasModel</strong></a>(<a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#PandasModel">PandasModel</a>(data=None)<br>
+&nbsp;<br>
+Classe&nbsp;<a href="#PandasModel">PandasModel</a><br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="PySide6.QtCore.html#QAbstractTableModel">QAbstractTableModel</a>&nbsp;:&nbsp;hérite&nbsp;de&nbsp;la&nbsp;classe&nbsp;<a href="PySide6.QtCore.html#QAbstractTableModel">QAbstractTableModel</a><br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt>Method resolution order:</dt>
+<dd><a href="PandasModel.html#PandasModel">PandasModel</a></dd>
+<dd><a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a></dd>
+<dd><a href="PySide6.QtCore.html#QAbstractItemModel">PySide6.QtCore.QAbstractItemModel</a></dd>
+<dd><a href="PySide6.QtCore.html#QObject">PySide6.QtCore.QObject</a></dd>
+<dd>Shiboken.Object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PandasModel-__init__"><strong>__init__</strong></a>(self, data=None)</dt><dd><span class="code">Constructeur&nbsp;pour&nbsp;<a href="#PandasModel">PandasModel</a><br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;(DataFrame)&nbsp;:&nbsp;DataFrame&nbsp;(optionnel)&nbsp;initialisé&nbsp;à&nbsp;None</span></dd></dl>
+
+<dl><dt><a name="PandasModel-columnCount"><strong>columnCount</strong></a>(self, parent=None)</dt><dd><span class="code">Compte&nbsp;the&nbsp;nombre&nbsp;de&nbsp;colonnes<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parent&nbsp;(QModelIndex)&nbsp;le&nbsp;pointeur<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;le&nbsp;nombre&nbsp;de&nbsp;colonnes</span></dd></dl>
+
+<dl><dt><a name="PandasModel-data"><strong>data</strong></a>(self, index, role=&lt;ItemDataRole.DisplayRole: 0&gt;)</dt><dd><span class="code">Définit&nbsp;les&nbsp;lignes&nbsp;à&nbsp;afficher&nbsp;suivant&nbsp;l'index<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;index&nbsp;(QModelIndex)&nbsp;:&nbsp;l'index&nbsp;de&nbsp;la&nbsp;cellule<br>
+&nbsp;&nbsp;&nbsp;&nbsp;role&nbsp;:&nbsp;(Qt.DisplayRole)&nbsp;donnée&nbsp;de&nbsp;type&nbsp;textuelle&nbsp;pour&nbsp;l'affichage<br>
+Returns&nbsp;:</span></dd></dl>
+
+<dl><dt><a name="PandasModel-get_data"><strong>get_data</strong></a>(self)</dt><dd><span class="code">Retourne&nbsp;le&nbsp;DataFrame&nbsp;inclut&nbsp;dans&nbsp;le&nbsp;modèle<br>
+Args&nbsp;:<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;le&nbsp;dataframe</span></dd></dl>
+
+<dl><dt><a name="PandasModel-group_by"><strong>group_by</strong></a>(self, col)</dt><dd><span class="code">Tri&nbsp;du&nbsp;DataFrame&nbsp;par&nbsp;group&nbsp;en&nbsp;fonction&nbsp;de&nbsp;la&nbsp;colonne<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;col&nbsp;(int)&nbsp;:&nbsp;index&nbsp;(ou&nbsp;nom&nbsp;de&nbsp;la&nbsp;colonne)<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;le&nbsp;dataframe&nbsp;regroupé&nbsp;par&nbsp;la&nbsp;colonne&nbsp;sélectionnée&nbsp;et&nbsp;on&nbsp;affiche&nbsp;le&nbsp;prix&nbsp;par&nbsp;colonne</span></dd></dl>
+
+<dl><dt><a name="PandasModel-headerData"><strong>headerData</strong></a>(self, section, orientation, role)</dt></dl>
+
+<dl><dt><a name="PandasModel-load_csv"><strong>load_csv</strong></a>(self, path)</dt><dd><span class="code">Chargement&nbsp;du&nbsp;fichier&nbsp;csv&nbsp;et&nbsp;intégration&nbsp;du&nbsp;dataframe&nbsp;dans&nbsp;le&nbsp;modèle<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;path&nbsp;(str)&nbsp;:&nbsp;le&nbsp;chemin&nbsp;du&nbsp;fichier&nbsp;csv<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;None</span></dd></dl>
+
+<dl><dt><a name="PandasModel-removeRow"><strong>removeRow</strong></a>(self, row, parent=&lt;PySide6.QtCore.QModelIndex(-1,-1,0x0,QObject(0x0)) at 0x000002A7571E9480&gt;)</dt><dd><span class="code">Suppression&nbsp;d'une&nbsp;ligne&nbsp;dans&nbsp;un&nbsp;DataFrame&nbsp;et&nbsp;dans&nbsp;le&nbsp;Modèle<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;row&nbsp;:&nbsp;numéro&nbsp;de&nbsp;la&nbsp;ligne&nbsp;dans&nbsp;un&nbsp;DataFrame<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parent&nbsp;:&nbsp;pointeur&nbsp;pour&nbsp;définir&nbsp;l'enregistrement&nbsp;sur&nbsp;lequel&nbsp;on&nbsp;pointe<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;bool</span></dd></dl>
+
+<dl><dt><a name="PandasModel-rowCount"><strong>rowCount</strong></a>(self, parent=None)</dt><dd><span class="code">Compte&nbsp;the&nbsp;nombre&nbsp;of&nbsp;lignes<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parent&nbsp;(QModelIndex)&nbsp;le&nbsp;pointeur<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;le&nbsp;nombre&nbsp;de&nbsp;lignes</span></dd></dl>
+
+<dl><dt><a name="PandasModel-save_to_csv"><strong>save_to_csv</strong></a>(self, file_path)</dt><dd><span class="code">On&nbsp;sauve&nbsp;toutes&nbsp;les&nbsp;informations&nbsp;sauf&nbsp;les&nbsp;index<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file_path&nbsp;(str)&nbsp;:&nbsp;chemin&nbsp;du&nbsp;fichier&nbsp;csv<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;None</span></dd></dl>
+
+<dl><dt><a name="PandasModel-sort"><strong>sort</strong></a>(self, col, ascending=&lt;SortOrder.AscendingOrder: 0&gt;)</dt><dd><span class="code">Tri&nbsp;du&nbsp;DataFrame&nbsp;en&nbsp;fonction&nbsp;de&nbsp;la&nbsp;colonne<br>
+&nbsp;&nbsp;&nbsp;&nbsp;et&nbsp;on&nbsp;définit&nbsp;un&nbsp;ordre&nbsp;ascendant&nbsp;ou&nbsp;descendant.<br>
+&nbsp;<br>
+Args&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;col&nbsp;(int)&nbsp;:&nbsp;colonne<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ascending&nbsp;(bool,&nbsp;optional)&nbsp;:&nbsp;tri&nbsp;ascendant&nbsp;ou&nbsp;descendant<br>
+&nbsp;<br>
+Returns&nbsp;:&nbsp;None</span></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>staticMetaObject</strong> = PySide6.QtCore.QMetaObject("PandasModel" inherits "QAbstractTableModel":
+)</dl>
+
+<hr>
+Methods inherited from <a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a>:<br>
+<dl><dt><a name="PandasModel-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><span class="code">Implement&nbsp;delattr(self,&nbsp;name).</span></dd></dl>
+
+<dl><dt><a name="PandasModel-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><span class="code">Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</span></dd></dl>
+
+<dl><dt><a name="PandasModel-dropMimeData"><strong>dropMimeData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-flags"><strong>flags</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-hasChildren"><strong>hasChildren</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-index"><strong>index</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-parent"><strong>parent</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-sibling"><strong>sibling</strong></a>(...)</dt></dl>
+
+<hr>
+Static methods inherited from <a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a>:<br>
+<dl><dt><a name="PandasModel-__new__"><strong>__new__</strong></a>(*args, **kwargs)<span class="grey"><span class="heading-text"> class method of <a href="PySide6.QtCore.html#QAbstractTableModel">PySide6.QtCore.QAbstractTableModel</a></span></span></dt><dd><span class="code">Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<hr>
+Methods inherited from <a href="PySide6.QtCore.html#QAbstractItemModel">PySide6.QtCore.QAbstractItemModel</a>:<br>
+<dl><dt><a name="PandasModel-beginInsertColumns"><strong>beginInsertColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginInsertRows"><strong>beginInsertRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginMoveColumns"><strong>beginMoveColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginMoveRows"><strong>beginMoveRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginRemoveColumns"><strong>beginRemoveColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginRemoveRows"><strong>beginRemoveRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-beginResetModel"><strong>beginResetModel</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-buddy"><strong>buddy</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-canDropMimeData"><strong>canDropMimeData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-canFetchMore"><strong>canFetchMore</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-changePersistentIndex"><strong>changePersistentIndex</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-changePersistentIndexList"><strong>changePersistentIndexList</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-checkIndex"><strong>checkIndex</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-clearItemData"><strong>clearItemData</strong></a>(...)</dt></dl>
+
+<strong>columnsAboutToBeInserted</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>columnsAboutToBeMoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>columnsAboutToBeRemoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>columnsInserted</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>columnsMoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>columnsRemoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-createIndex"><strong>createIndex</strong></a>(...)</dt></dl>
+
+<strong>dataChanged</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-decodeData"><strong>decodeData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-encodeData"><strong>encodeData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endInsertColumns"><strong>endInsertColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endInsertRows"><strong>endInsertRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endMoveColumns"><strong>endMoveColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endMoveRows"><strong>endMoveRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endRemoveColumns"><strong>endRemoveColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endRemoveRows"><strong>endRemoveRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-endResetModel"><strong>endResetModel</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-fetchMore"><strong>fetchMore</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-hasIndex"><strong>hasIndex</strong></a>(...)</dt></dl>
+
+<strong>headerDataChanged</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-insertColumn"><strong>insertColumn</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-insertColumns"><strong>insertColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-insertRow"><strong>insertRow</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-insertRows"><strong>insertRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-itemData"><strong>itemData</strong></a>(...)</dt></dl>
+
+<strong>layoutAboutToBeChanged</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>layoutChanged</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-match"><strong>match</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-mimeData"><strong>mimeData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-mimeTypes"><strong>mimeTypes</strong></a>(...)</dt></dl>
+
+<strong>modelAboutToBeReset</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>modelReset</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-moveColumn"><strong>moveColumn</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-moveColumns"><strong>moveColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-moveRow"><strong>moveRow</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-moveRows"><strong>moveRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-persistentIndexList"><strong>persistentIndexList</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-removeColumn"><strong>removeColumn</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-removeColumns"><strong>removeColumns</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-removeRows"><strong>removeRows</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-resetInternalData"><strong>resetInternalData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-revert"><strong>revert</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-roleNames"><strong>roleNames</strong></a>(...)</dt></dl>
+
+<strong>rowsAboutToBeInserted</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>rowsAboutToBeMoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>rowsAboutToBeRemoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>rowsInserted</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>rowsMoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<strong>rowsRemoved</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-setData"><strong>setData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-setHeaderData"><strong>setHeaderData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-setItemData"><strong>setItemData</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-span"><strong>span</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-submit"><strong>submit</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-supportedDragActions"><strong>supportedDragActions</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-supportedDropActions"><strong>supportedDropActions</strong></a>(...)</dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="PySide6.QtCore.html#QAbstractItemModel">PySide6.QtCore.QAbstractItemModel</a>:<br>
+<dl><dt><strong>CheckIndexOption</strong> = &lt;flag 'CheckIndexOption'&gt;</dl>
+
+<dl><dt><strong>LayoutChangeHint</strong> = &lt;enum 'LayoutChangeHint'&gt;</dl>
+
+<hr>
+Methods inherited from <a href="PySide6.QtCore.html#QObject">PySide6.QtCore.QObject</a>:<br>
+<dl><dt><a name="PandasModel-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><span class="code">Return&nbsp;getattr(self,&nbsp;name).</span></dd></dl>
+
+<dl><dt><a name="PandasModel-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><span class="code">Return&nbsp;repr(self).</span></dd></dl>
+
+<dl><dt><a name="PandasModel-blockSignals"><strong>blockSignals</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-childEvent"><strong>childEvent</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-children"><strong>children</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-connectNotify"><strong>connectNotify</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-customEvent"><strong>customEvent</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-deleteLater"><strong>deleteLater</strong></a>(...)</dt></dl>
+
+<strong>destroyed</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-disconnectNotify"><strong>disconnectNotify</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-dumpObjectInfo"><strong>dumpObjectInfo</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-dumpObjectTree"><strong>dumpObjectTree</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-dynamicPropertyNames"><strong>dynamicPropertyNames</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-emit"><strong>emit</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-event"><strong>event</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-eventFilter"><strong>eventFilter</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-findChild"><strong>findChild</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-findChildren"><strong>findChildren</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-inherits"><strong>inherits</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-installEventFilter"><strong>installEventFilter</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-isQuickItemType"><strong>isQuickItemType</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-isSignalConnected"><strong>isSignalConnected</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-isWidgetType"><strong>isWidgetType</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-isWindowType"><strong>isWindowType</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-killTimer"><strong>killTimer</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-metaObject"><strong>metaObject</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-moveToThread"><strong>moveToThread</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-objectName"><strong>objectName</strong></a>(...)</dt></dl>
+
+<strong>objectNameChanged</strong> = &lt;PySide6.QtCore.Signal object&gt;
+<dl><dt><a name="PandasModel-property"><strong>property</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-receivers"><strong>receivers</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-removeEventFilter"><strong>removeEventFilter</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-sender"><strong>sender</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-senderSignalIndex"><strong>senderSignalIndex</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-setObjectName"><strong>setObjectName</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-setParent"><strong>setParent</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-setProperty"><strong>setProperty</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-signalsBlocked"><strong>signalsBlocked</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-startTimer"><strong>startTimer</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-thread"><strong>thread</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-timerEvent"><strong>timerEvent</strong></a>(...)</dt></dl>
+
+<hr>
+Class methods inherited from <a href="PySide6.QtCore.html#QObject">PySide6.QtCore.QObject</a>:<br>
+<dl><dt><a name="PandasModel-tr"><strong>tr</strong></a>(...)</dt></dl>
+
+<hr>
+Static methods inherited from <a href="PySide6.QtCore.html#QObject">PySide6.QtCore.QObject</a>:<br>
+<dl><dt><a name="PandasModel-connect"><strong>connect</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="PandasModel-disconnect"><strong>disconnect</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from Shiboken.Object:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
