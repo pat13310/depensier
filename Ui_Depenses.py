@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'depensesfNZecc.ui'
+## Form generated from reading UI file 'depensesbYcBqU.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.0
 ##
@@ -26,7 +26,7 @@ class Ui_Depenses(object):
     def setupUi(self, Depenses):
         if not Depenses.objectName():
             Depenses.setObjectName(u"Depenses")
-        Depenses.resize(1416, 741)
+        Depenses.resize(1416, 800)
         self.actionOuvrir = QAction(Depenses)
         self.actionOuvrir.setObjectName(u"actionOuvrir")
         self.actionSauver = QAction(Depenses)
@@ -237,7 +237,7 @@ class Ui_Depenses(object):
 
         self.cmbGroup = QComboBox(self.widget1)
         self.cmbGroup.setObjectName(u"cmbGroup")
-        self.cmbGroup.setMinimumSize(QSize(100, 24))
+        self.cmbGroup.setMinimumSize(QSize(130, 24))
         self.cmbGroup.setStyleSheet(u"background-color: rgb(255, 255, 255);\n"
 "border: 1px solid rgb(168, 168, 168)")
 
@@ -359,12 +359,7 @@ class Ui_Depenses(object):
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.tableView = QTableView(self.splitter)
         self.tableView.setObjectName(u"tableView")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
-        self.tableView.setSizePolicy(sizePolicy3)
-        self.tableView.setMinimumSize(QSize(600, 300))
+        self.tableView.setMinimumSize(QSize(0, 0))
         self.tableView.setFocusPolicy(Qt.FocusPolicy.WheelFocus)
         self.tableView.setAcceptDrops(True)
         self.tableView.setMidLineWidth(0)
@@ -379,30 +374,21 @@ class Ui_Depenses(object):
         self.tableView.verticalHeader().setProperty("showSortIndicator", False)
         self.widget_graph = QWidget(self.splitter)
         self.widget_graph.setObjectName(u"widget_graph")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy4.setHorizontalStretch(1)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.widget_graph.sizePolicy().hasHeightForWidth())
-        self.widget_graph.setSizePolicy(sizePolicy4)
-        self.widget_graph.setMinimumSize(QSize(300, 0))
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.widget_graph.sizePolicy().hasHeightForWidth())
+        self.widget_graph.setSizePolicy(sizePolicy3)
+        self.widget_graph.setMinimumSize(QSize(0, 0))
         self.widget_graph.setStyleSheet(u"background-color: rgb(248, 248, 248);\n"
 "border: 1px solid rgb(220,220,220);")
         self.horizontalLayout = QHBoxLayout(self.widget_graph)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.graph1 = QLabel(self.widget_graph)
-        self.graph1.setObjectName(u"graph1")
-        self.graph1.setStyleSheet(u"border: 1px solid  rgb(235, 235, 235);")
-
-        self.horizontalLayout.addWidget(self.graph1)
-
         self.graphView = QLabel(self.widget_graph)
         self.graphView.setObjectName(u"graphView")
         self.graphView.setEnabled(True)
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.graphView.sizePolicy().hasHeightForWidth())
-        self.graphView.setSizePolicy(sizePolicy5)
+        sizePolicy3.setHeightForWidth(self.graphView.sizePolicy().hasHeightForWidth())
+        self.graphView.setSizePolicy(sizePolicy3)
         self.graphView.setStyleSheet(u"border: 1px solid  rgb(235, 235, 235);")
 
         self.horizontalLayout.addWidget(self.graphView)
@@ -413,11 +399,11 @@ class Ui_Depenses(object):
 
         self.widget_bottom = QWidget(self.centralwidget)
         self.widget_bottom.setObjectName(u"widget_bottom")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy6.setHorizontalStretch(1)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.widget_bottom.sizePolicy().hasHeightForWidth())
-        self.widget_bottom.setSizePolicy(sizePolicy6)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy4.setHorizontalStretch(1)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.widget_bottom.sizePolicy().hasHeightForWidth())
+        self.widget_bottom.setSizePolicy(sizePolicy4)
         self.widget_bottom.setMinimumSize(QSize(0, 50))
         self.widget_bottom.setStyleSheet(u"background-color: rgb(226, 226, 226);")
         self.horizontalLayout_4 = QHBoxLayout(self.widget_bottom)
@@ -425,11 +411,11 @@ class Ui_Depenses(object):
         self.txtTotal = QLineEdit(self.widget_bottom)
         self.txtTotal.setObjectName(u"txtTotal")
         self.txtTotal.setEnabled(True)
-        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy7.setHorizontalStretch(2)
-        sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(self.txtTotal.sizePolicy().hasHeightForWidth())
-        self.txtTotal.setSizePolicy(sizePolicy7)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(2)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.txtTotal.sizePolicy().hasHeightForWidth())
+        self.txtTotal.setSizePolicy(sizePolicy5)
         self.txtTotal.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.txtTotal.setReadOnly(True)
 
@@ -487,7 +473,6 @@ class Ui_Depenses(object):
         self.pbGraphLine.setText(QCoreApplication.translate("Depenses", u"Ligne", None))
         self.pbGraphHisto.setText(QCoreApplication.translate("Depenses", u"Histogramme", None))
         self.pbGraphPie.setText(QCoreApplication.translate("Depenses", u"Camembert", None))
-        self.graph1.setText("")
         self.graphView.setText("")
         self.menuFichier.setTitle(QCoreApplication.translate("Depenses", u"Fichier", None))
         self.menuExporter_en.setTitle(QCoreApplication.translate("Depenses", u"Exporter en", None))

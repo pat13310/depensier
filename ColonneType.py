@@ -8,6 +8,7 @@ class ColonneType(Enum):
     LIBELLE = 'Libellé'
     MOIS = 'Mois'
     ANNEE = 'Année'
+    ANNEE_DETAILS = "Année en détail"
 
 
 class GraphType(Flag):

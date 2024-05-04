@@ -23,6 +23,9 @@ class PandasModel(QAbstractTableModel):
         self._data_filter: DataFrame = data  # data_filter est un DataFrame de filtre (garde l'état avant le filter)
         self.is_group: bool = False
         locale.setlocale(locale.LC_TIME, 'fr_FR')  # On localise sur la France
+        if self._data is not None:
+            for index, name in enumerate(self._data.columns):
+                self.setHeaderData(index, Qt.Horizontal, name)
 
     def rowCount(self, parent=None):
         """Compte the nombre of lignes
@@ -51,31 +54,38 @@ class PandasModel(QAbstractTableModel):
             role : (Qt.DisplayRole) donnée de type textuelle pour l'affichage
         Returns :
         """
-        if index.isValid():
-            if role == Qt.DisplayRole:
-                value = self._data.iloc[index.row(), index.column()]
-                # Si c'est une date dans DataFrame au format Timestamp alors,
-                # je convertis au format français juste au niveau de l'affichage
-                if 'Mois' in self._data.columns[index.column()] and isinstance(value, pd.Period):
-                    return value.strftime('%B %Y').capitalize()
+        if not index.isValid():
+            return None
 
-                if 'Date' in self._data.columns[index.column()] and isinstance(value, pd.Timestamp):
-                    # Convertir et retourner la date au format français
-                    return value.strftime('%d/%m/%Y')
-                # Formater les prix avec deux décimales (c'est plus joli)
-                if isinstance(value, float):
-                    return "{:.2f}".format(value)
-                else:
-                    return str(value)
+        if role == Qt.DisplayRole:
+            return self.format_display_data(index)
 
-            if role == Qt.TextAlignmentRole:
-                # Définir l'alignement centré pour la colonne Prix
-                if index.column() == 3 and not self.is_group:
-                    return Qt.AlignRight
-                if index.column() == 1 and self.is_group:
-                    return Qt.AlignRight
+        if role == Qt.TextAlignmentRole:
+            return self.format_text_alignment(index)
 
         return None
+
+    def format_display_data(self, index):
+        value = self._data.iloc[index.row(), index.column()]
+        column_name = self._data.columns[index.column()]
+
+        if 'Mois' in column_name and isinstance(value, pd.Period):
+            return value.strftime('%B %Y').capitalize()
+
+        if 'Date' in column_name and isinstance(value, pd.Timestamp):
+            return value.strftime('%d/%m/%Y')
+
+        if isinstance(value, float):
+            return "{:.2f}".format(value)
+
+        return str(value)
+
+    def format_text_alignment(self, index):
+        # column_name = self._data.columns[index.column()]
+        value = self._data.iloc[index.row(), index.column()]
+        if isinstance(value, float):
+            return Qt.AlignRight | Qt.AlignVCenter
+        return Qt.AlignLeft | Qt.AlignVCenter  # ou une autre valeur par défaut pour l'alignement
 
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -108,6 +118,9 @@ class PandasModel(QAbstractTableModel):
         self.layoutChanged.emit()
         self._data_original = self._data.copy(True)  # on copie même les données
 
+        for index, name in enumerate(self._data.columns):
+            self.setHeaderData(index, Qt.Horizontal, name)
+
     def save_to_csv(self, file_path):
         """On sauve toutes les informations sauf les index
         Args :
@@ -116,13 +129,13 @@ class PandasModel(QAbstractTableModel):
         Returns : None
         """
         if file_path.endswith('.csv'):
-            self._data.to_csv(file_path, index=False)
+            self._data_original.to_csv(file_path, index=False)
 
         elif file_path.endswith('.json'):
-            self._data.to_json(file_path, index=False)
+            self._data_original.to_json(file_path, index=False)
 
         elif file_path.endswith('.xlsx'):
-            self._data.to_excel(file_path, index=False)
+            self._data_original.to_excel(file_path, index=False)
         else:
             self.errorOccurred.emit("Format non supporté")
 
@@ -138,6 +151,7 @@ class PandasModel(QAbstractTableModel):
         self.beginInsertRows(parent, self.rowCount(parent), self.rowCount(parent))
         new_data = pd.DataFrame([row], columns=self._data.columns)
         self._data = pd.concat([self._data, new_data], ignore_index=True)
+        self._data_original = self._data.copy(True)
         self.endInsertRows()
 
     def update(self, row_index, new_values):
@@ -161,7 +175,7 @@ class PandasModel(QAbstractTableModel):
         top_left = self.index(row_index, 0)
         bottom_right = self.index(row_index, self.columnCount() - 1)
         self.dataChanged.emit(top_left, bottom_right)
-
+        self._data_original = self._data.copy(True)
         return True
 
     def removeRow(self, row, parent=QModelIndex()):
@@ -178,6 +192,7 @@ class PandasModel(QAbstractTableModel):
         self.beginRemoveRows(parent, row, row)  # Signaler le début de la suppression
         # Supprimer la ligne et on redéfinit les index
         self._data = self._data.drop(self._data.index[row], axis=0).reset_index(drop=True)
+        self._data_original = self._data.copy(True)
         self.endRemoveRows()  # Signaler la fin de la suppression
         return True
 
@@ -292,4 +307,22 @@ class PandasModel(QAbstractTableModel):
         self._data['Année'] = self._data['Année'].astype(str)
         self._data_filter = self._data.copy(deep=True)
 
+        self.layoutChanged.emit()  # Signaler que les modifications sont terminées
+
+    def pivot(self, data, values, index, columns, agg="sum"):
+        self.layoutAboutToBeChanged.emit()
+        if data is not None:
+            data = self._data_original.copy(True)
+        try:
+            # Préparation des données
+            data = pd.DataFrame(data)
+            data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
+            data['Année'] = data['Date'].dt.year  # Assurez-vous d'ajouter l'année comme une colonne numérique
+            # data["Total"] = data.groupby("Date").sum(axis="rows")
+            # Application de la table pivot
+            # agg_func = getattr(pd.core.groupby.DataFrameGroupBy, agg) if isinstance(agg, str) else agg
+            self._data = data.pivot_table(values=values, index=index, columns=columns, aggfunc=agg)
+            self._data['Dépense annuelle '] = self._data.sum(axis=1)
+        except Exception as e:
+            print("Error in processing pivot table:", e)
         self.layoutChanged.emit()  # Signaler que les modifications sont terminées

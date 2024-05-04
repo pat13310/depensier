@@ -2,7 +2,7 @@
 import re
 import sys
 
-from PySide6.QtCore import Qt, QDate
+from PySide6.QtCore import Qt, QDate, QSize
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QPixmap
 from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QTableView, QPushButton
 
@@ -30,9 +30,6 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         # Set up the UI
         self.matplot = None
         self.row = None
-        self.df = None
-        self.df_group = None
-        self.df_sort = None
         self.setupUi(self)
         # connexion aux slots
         self.pushButton.clicked.connect(self.on_pushButton_clicked)
@@ -57,20 +54,18 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.model.errorOccurred.connect(self.on_filter_error)
         self.tree_model = PandasTreeModel()
         self.selected_item = None
-        self.graph1.setVisible(False)
 
         self.date.setDate(QDate.currentDate())
         self.date.setMaximumDate(QDate.currentDate())
         self.date.dateChanged.connect(self.on_date)
-        self.graph_type = GraphType.LINE
+        self.graph_type: GraphType = GraphType.LINE
+        self.column_type: ColonneType = ColonneType.SANS
+        #
         self.pbGraphLine.setStyleSheet("background-color: rgb(120, 120, 120); color:white;")
         self.pbGraphLine.setChecked(True)
+        self.widget_crud.setVisible(False)
 
     def init_table(self):
-        self.model.setHeaderData(0, Qt.Horizontal, "Date")
-        self.model.setHeaderData(1, Qt.Horizontal, "Catégorie")
-        self.model.setHeaderData(2, Qt.Horizontal, "Libellé")
-        self.model.setHeaderData(3, Qt.Horizontal, "Prix")
         self.tableView.setSelectionBehavior(QTableView.SelectRows)
         self.tableView.setSelectionMode(QTableView.SingleSelection)
 
@@ -79,12 +74,26 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.model.sort(index, order)
         self.refresh_table()
 
+    def set_headers(self):
+        if self.column_type != ColonneType.ANNEE_DETAILS.value:
+            self.tableView.setColumnWidth(1, 110)
+            self.tableView.setColumnWidth(2, 155)
+            self.tableView.setColumnWidth(3, 100)
+            self.tableView.setMinimumSize(QSize(600, 300))
+            self.widget_graph.setVisible(True)
+
+        else:
+            count = len(self.model.get_data().columns)
+            for i in range(len(self.model.get_data().columns)):
+                self.tableView.setColumnWidth(i, 120)
+
+            self.widget_graph.setVisible(False)
+            self.tableView.setMinimumSize(QSize(1000, 300))
+
     def load_csv(self, file: str):
         self.model.load(file)
         self.refresh_table()
-        self.tableView.setColumnWidth(1, 110)
-        self.tableView.setColumnWidth(2, 155)
-        self.tableView.setColumnWidth(3, 100)
+        self.set_headers()
         # On renseigne le combo box
         self.cmbGroup.clear()
         self.cmbCategory.clear()
@@ -102,6 +111,8 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.refresh_counters()
 
     def refresh_counters(self):
+        if self.column_type == ColonneType.ANNEE_DETAILS.value:
+            return
         prix_total = self.model.get_data()['Prix'].sum()
         self.txtTotal.setText(
             f"Total des dépenses : {prix_total:.2f} €   -  Nombre d'éléments : {len(self.model.get_data())}")
@@ -202,21 +213,33 @@ class DepensesMain(QMainWindow, Ui_Depenses):
     def on_group(self, index):
         if self.model is None:
             return
-        self.txtFilter.setText("")
-        selected: str = self.cmbGroup.currentData(Qt.UserRole)
-        if selected == ColonneType.SANS.value:
-            self.model.to_original()
-        elif selected == ColonneType.DATE.value:
-            self.model.group_by(0)
-        elif selected == ColonneType.CATEGORIE.value:
-            self.model.group_by(1)
-        elif selected == ColonneType.LIBELLE.value:
-            self.model.group_by(2)
-        elif selected == ColonneType.MOIS.value:
-            self.model.per_month()
-        elif selected == ColonneType.ANNEE.value:
-            self.model.per_year()
+        self.column_type = self.cmbGroup.currentData(Qt.UserRole)
 
+        if self.column_type == ColonneType.SANS.value:
+            self.widget_crud.setVisible(True)
+        else:
+            self.widget_crud.setVisible(False)
+
+        self.txtFilter.setText("")
+
+        if self.column_type == ColonneType.SANS.value:
+            self.model.to_original()
+        elif self.column_type == ColonneType.DATE.value:
+            self.model.group_by(0)
+        elif self.column_type == ColonneType.CATEGORIE.value:
+            self.model.group_by(1)
+        elif self.column_type == ColonneType.LIBELLE.value:
+            self.model.group_by(2)
+        elif self.column_type == ColonneType.MOIS.value:
+            self.model.per_month()
+        elif self.column_type == ColonneType.ANNEE.value:
+            self.model.per_year()
+        elif self.column_type == ColonneType.ANNEE_DETAILS.value:
+            data = self.model.get_data()
+
+            self.model.pivot(data, values="Prix", index="Année", columns="Catégorie")
+
+        self.set_headers()
         self.show_graphview(self.cmbGroup.currentData(Qt.UserRole))
         self.refresh_counters()
 
@@ -236,7 +259,9 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         pass
 
     def show_graphview(self, sort):
+
         data = self.model.get_data()
+
         plt.figure(figsize=(8, 4))  # Taille du graphe
         ax = plt.gca()
         plt.subplots_adjust(bottom=0.3)  # Ajuster la marge inférieure
@@ -250,7 +275,6 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             plt.xticks(rotation=45, ha='right')  # Rotation à 45 degrés et alignement à droite
             plt.rc('xtick', labelsize=6)
             plt.rc('ytick', labelsize=7)
-
 
         if sort == ColonneType.DATE.value:
             if not self.graph_type & GraphType.PIE:
@@ -297,7 +321,10 @@ class DepensesMain(QMainWindow, Ui_Depenses):
                 plt.xticks(rotation=0, ha='center')
 
         elif sort == ColonneType.SANS.value:
-            plt.figure(figsize=(6, 4))
+            plt.figure(figsize=(4, 4))
+
+        elif sort == ColonneType.ANNEE_DETAILS.value:
+            plt.figure(figsize=(2, 2))
 
         buf = BytesIO()
         plt.savefig(buf, format='png')
@@ -327,10 +354,10 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             plt.axis('equal')  # Assure que le pie chart est un cercle
 
     def load_data(self):
-        file_name, _ = QFileDialog.getSaveFileName(None, "Ouvrir le fichier dépenses", "",
+        file_name, _ = QFileDialog.getOpenFileName(None, "Ouvrir le fichier dépenses", "",
                                                    "Fichier CSV (*.csv);;Fichier JSON (*.json);;Fichier Excel (*.xlsx)")
         if file_name:
-            self.model.load(file_name)
+            self.load_csv(file_name)
 
     def save_data(self):
         # Ouvre une boîte de dialogue pour sauvegarder un fichier
