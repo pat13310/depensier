@@ -31,29 +31,49 @@
           <div class="body" role="main">
             
   <h1>Code source de PandasModel</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">QAbstractTableModel</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span>
+<span></span><span class="kn">import</span> <span class="nn">locale</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">QAbstractTableModel</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span><span class="p">,</span> <span class="n">Signal</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+
+<span class="sd">&quot;&quot;&quot; Classe PandasModel</span>
+
+<span class="sd">   Args :</span>
+<span class="sd">       QAbstractTableModel : hérite de la classe QAbstractTableModel</span>
+<span class="sd">   &quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="PandasModel">
 <a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel">[docs]</a>
 <span class="k">class</span> <span class="nc">PandasModel</span><span class="p">(</span><span class="n">QAbstractTableModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Classe PandasModel</span>
-<span class="sd">    Args :</span>
-<span class="sd">        QAbstractTableModel : hérite de la classe QAbstractTableModel</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Variables de la classe PandasModel :</span>
+<span class="sd">            errorOccurred (Signal) : Définit un signal qui envoie un message d&#39;erreur</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">errorOccurred</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># Définit un signal qui envoie un message d&#39;erreur</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Constructeur pour PandasModel</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            data (DataFrame) : DataFrame (optionnel) initialisé à None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PandasModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># data est un DataFrame pandas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># _data_original est le dataFrame d&#39;origine (la référence)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># _data est un DataFrame de travail courant (change en cours)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_filter</span><span class="p">:</span> <span class="n">DataFrame</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># data_filter est un DataFrame de filtre (garde l&#39;état avant le filter)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_TIME</span><span class="p">,</span> <span class="s1">&#39;fr_FR&#39;</span><span class="p">)</span>  <span class="c1"># On localise sur la France</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PandasModel.rowCount">
 <a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.rowCount">[docs]</a>
     <span class="k">def</span> <span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compte the nombre of lignes</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            parent (QModelIndex) le pointeur</span>
 
@@ -67,12 +87,13 @@
 <a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.columnCount">[docs]</a>
     <span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compte the nombre de colonnes</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            parent (QModelIndex) le pointeur</span>
 
 <span class="sd">        Returns : le nombre de colonnes</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
@@ -80,21 +101,51 @@
 <a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.data">[docs]</a>
     <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Définit les lignes à afficher suivant l&#39;index</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            index (QModelIndex) : l&#39;index de la cellule</span>
 <span class="sd">            role : (Qt.DisplayRole) donnée de type textuelle pour l&#39;affichage</span>
+
 <span class="sd">        Returns :</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">(),</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()])</span>
-            <span class="c1"># elif role == Qt.FontRole:</span>
-            <span class="c1">#     if index.row() == len(self._data) - 1:  # Vérifier si c&#39;est la dernière ligne</span>
-            <span class="c1">#         font = QFont()</span>
-            <span class="c1">#         font.setBold(True)</span>
-            <span class="c1">#         return font</span>
-            <span class="c1"># return None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_display_data</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">TextAlignmentRole</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_text_alignment</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.format_display_data">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.format_display_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">(),</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()]</span>
+        <span class="n">column_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Mois&#39;</span> <span class="ow">in</span> <span class="n">column_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Period</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Date&#39;</span> <span class="ow">in</span> <span class="n">column_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.format_text_alignment">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.format_text_alignment">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_text_alignment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="c1"># column_name = self._data.columns[index.column()]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">(),</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignVCenter</span>
+        <span class="k">return</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignVCenter</span>  <span class="c1"># ou une autre valeur par défaut pour l&#39;alignement</span></div>
 
 
 <div class="viewcode-block" id="PandasModel.headerData">
@@ -107,32 +158,105 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="PandasModel.load_csv">
-<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.load_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="PandasModel.load">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.load">[docs]</a>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Chargement du fichier csv et intégration du dataframe dans le modèle</span>
+
 <span class="sd">        Args :</span>
-<span class="sd">            path (str) : le chemin du fichier csv</span>
+<span class="sd">            file_path (str) : le chemin du fichier de données (csv, json, xlsx)</span>
 
 <span class="sd">        Returns : None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># On charge le dataframe à partir du fichier cvd</span>
+        <span class="c1"># On charge le dataframe à partir du fichier csv</span>
         <span class="c1"># et même temps, on fige l&#39;affichage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="c1"># On a converti en objet dateTime pour gérer correctement les dates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+        <span class="c1"># Juste la date pas les heures (ptdr)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># on copie même les données</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PandasModel.save_to_csv">
-<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.save_to_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;On sauve toutes les informations sauf les index</span>
+<div class="viewcode-block" id="PandasModel.save">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.save">[docs]</a>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;On sauve toutes les informations s</span>
+<span class="sd">        auf les index</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            file_path (str) : chemin du fichier csv</span>
 
 <span class="sd">        Returns : None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">errorOccurred</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Format non supporté&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.addRow">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.addRow">[docs]</a>
+    <span class="k">def</span> <span class="nf">addRow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">QModelIndex</span><span class="p">()):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Ajout d&#39;une ligne dans le dataframe et le modèle à la fois</span>
+
+<span class="sd">                Args :</span>
+<span class="sd">                    row (dictionary) : données à insérer</span>
+<span class="sd">                    parent (QModelIndex) : l&#39;index de la cellule</span>
+
+<span class="sd">                Returns : bool</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beginInsertRows</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(</span><span class="n">parent</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">(</span><span class="n">parent</span><span class="p">))</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">row</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">new_data</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endInsertRows</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.update">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_index</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">               Mise à jour d&#39;une ligne dans le dataframe et le modèle</span>
+
+<span class="sd">               Args :</span>
+<span class="sd">                   row_index : l&#39;index de la ligne</span>
+<span class="sd">                   modify_value (dictionnaire) : nouvelle valeur (DataFrame) de la ligne dans le dataframe</span>
+
+<span class="sd">               Returns : bool</span>
+<span class="sd">               &quot;&quot;&quot;</span>
+        <span class="c1"># Vérifier que l&#39;index de la ligne est valide</span>
+        <span class="k">if</span> <span class="n">row_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">row_index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Mettre à jour les valeurs dans le DataFrame</span>
+        <span class="k">for</span> <span class="n">column_name</span><span class="p">,</span> <span class="n">new_value</span> <span class="ow">in</span> <span class="n">new_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">row_index</span><span class="p">,</span> <span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
+
+        <span class="c1"># Mettre à jour la vue</span>
+        <span class="n">top_left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">bottom_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">top_left</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="PandasModel.removeRow">
@@ -140,6 +264,7 @@
     <span class="k">def</span> <span class="nf">removeRow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">QModelIndex</span><span class="p">()):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Suppression d&#39;une ligne dans un DataFrame et dans le Modèle</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            row : numéro de la ligne dans un DataFrame</span>
 <span class="sd">            parent : pointeur pour définir l&#39;enregistrement sur lequel on pointe</span>
@@ -150,6 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">beginRemoveRows</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>  <span class="c1"># Signaler le début de la suppression</span>
         <span class="c1"># Supprimer la ligne et on redéfinit les index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">endRemoveRows</span><span class="p">()</span>  <span class="c1"># Signaler la fin de la suppression</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -166,6 +292,7 @@
 
 <span class="sd">        Returns : None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Si &#39;col&#39; est un index de colonne</span>
             <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>  <span class="c1"># Convertir l&#39;index en nom de colonne</span>
 
@@ -180,13 +307,49 @@
 <div class="viewcode-block" id="PandasModel.group_by">
 <a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.group_by">[docs]</a>
     <span class="k">def</span> <span class="nf">group_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Tri du DataFrame par group en fonction de la colonne</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tri du DataFrame par group en fonction de la colonne</span>
+
 <span class="sd">        Args :</span>
 <span class="sd">            col (int) : index (ou nom de la colonne)</span>
 
-<span class="sd">        Returns : le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne</span>
+<span class="sd">        Returns :</span>
+<span class="sd">            le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">col</span><span class="p">)[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Si &#39;col&#39; est un index de colonne</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>  <span class="c1"># Convertir l&#39;index en nom de colonne</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">col</span><span class="p">)[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.filter">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.filter">[docs]</a>
+    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filtre les données selon l&#39;expression donnée.</span>
+
+<span class="sd">        Args :</span>
+<span class="sd">            expression (str) : Une expression conditionnelle pour filtrer les données, ex., &#39;Prix &gt; 20&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Préparer la vue pour les changements</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_filter</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="c1"># Appliquer le filtre</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span>  <span class="c1"># Restaurer les données originales en cas d&#39;erreur</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">errorOccurred</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors du filtrage : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
 
 
 <div class="viewcode-block" id="PandasModel.get_data">
@@ -198,6 +361,109 @@
 <span class="sd">        Returns : le dataframe</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.to_original">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.to_original">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_original</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restaure et affiche les données originelles chargées lors de :</span>
+<span class="sd">            - load_csv</span>
+<span class="sd">            - constructeur</span>
+
+<span class="sd">        Args :</span>
+
+<span class="sd">        Return : None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.per_month">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.per_month">[docs]</a>
+    <span class="k">def</span> <span class="nf">per_month</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Affiche la vue en fonction des mois</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="c1"># Extraire le mois de la date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Mois&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">)</span>
+        <span class="c1"># Grouper par &#39;Mois&#39; et calculer la somme des &#39;Prix&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Mois&#39;</span><span class="p">)[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.per_year">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.per_year">[docs]</a>
+    <span class="k">def</span> <span class="nf">per_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Affiche la vue en fonction des années</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># Extraire l&#39;année de la date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Année&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Grouper par &#39;Année&#39; et calculer la somme des &#39;Prix&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Année&#39;</span><span class="p">)[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="c1"># Convertir &#39;Année&#39; de Period à string pour un affichage plus convivial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Année&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Année&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.pivot">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.pivot">[docs]</a>
+    <span class="k">def</span> <span class="nf">pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">agg</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Pivot pour agencer et afficher les données de manière plus lisible</span>
+
+<span class="sd">            Args :</span>
+<span class="sd">                data (DataFrame) : DataFrame contenant le dataframe (optionnel)</span>
+<span class="sd">                values (Series) : détermine les valeurs du DataFrame</span>
+<span class="sd">                index (str) : nom de la colonne qui définit l&#39;index de notre DataFrame</span>
+<span class="sd">                columns (str) : nom de la colonne qui définit les colonnes de notre DataFrame</span>
+<span class="sd">                agg (str) : fonction aggregation pour calculer à partir des valeurs</span>
+<span class="sd">                par exemple la somme, la moyenne, le nombre ...</span>
+
+<span class="sd">            Returns : None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Préparation des données</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">/%m/%Y&#39;</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Année&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+            <span class="c1"># Application de la table pivot</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="n">agg</span><span class="p">)</span>
+            <span class="c1"># On rajoute la colonne Dépense annuelle</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;Dépense annuelle &#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error in processing pivot table:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
+
+
+<div class="viewcode-block" id="PandasModel.resume">
+<a class="viewcode-back" href="../PandasModel.html#PandasModel.PandasModel.resume">[docs]</a>
+    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_original</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;Prix&#39;</span><span class="p">:</span> <span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="s1">&#39;Min&#39;</span><span class="p">:</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;Max&#39;</span><span class="p">:</span> <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;Moyenne&#39;</span><span class="p">:</span> <span class="s1">&#39;mean&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>  <span class="c1"># Signaler que les modifications sont terminées</span></div>
 </div>
 
 </pre></div>
@@ -218,6 +484,10 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Depenses</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
@@ -251,7 +521,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Xen.
+      &#169;2024, Xenatronics.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>

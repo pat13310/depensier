@@ -14,6 +14,8 @@
     <script src="_static/translations.js?v=bf059b8c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="PandasModel module" href="PandasModel.html" />
+    <link rel="prev" title="Depenses" href="modules.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,60 +40,168 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DepenseMain.</span></span><span class="sig-name descname"><span class="pre">DepensesMain</span></span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain" title="Lien vers cette définition">¶</a></dt>
 <dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">QMainWindow</span></code>, <a class="reference internal" href="Ui_Depenses.html#Ui_Depenses.Ui_Depenses" title="Ui_Depenses.Ui_Depenses"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ui_Depenses</span></code></a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="DepenseMain.DepensesMain.add_data">
-<span class="sig-name descname"><span class="pre">add_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.add_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.add_data" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="DepenseMain.DepensesMain.delete_selected_row">
-<span class="sig-name descname"><span class="pre">delete_selected_row</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.delete_selected_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.delete_selected_row" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="DepenseMain.DepensesMain.group_by">
-<span class="sig-name descname"><span class="pre">group_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.group_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.group_by" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.draw_graph">
+<span class="sig-name descname"><span class="pre">draw_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colonne_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ColonneType</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.draw_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.draw_graph" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Affiche les graphes</p>
+<dl>
+<dt>Args :</dt><dd><p>data (DataFrame) : données pour afficher les graphes</p>
+<p>colonne_type (ColonneType) : le type de colonne à traiter</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.init_table">
 <span class="sig-name descname"><span class="pre">init_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.init_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.init_table" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Définit la sélection sur la ligne entière (Vue)</p>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="DepenseMain.DepensesMain.load_csv">
-<span class="sig-name descname"><span class="pre">load_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.load_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.load_csv" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.is_valide_field">
+<span class="sig-name descname"><span class="pre">is_valide_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.is_valide_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.is_valide_field" title="Lien vers cette définition">¶</a></dt>
+<dd><p>vérifie que les champs sont valides</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.load_data" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Charge le fichier dépense à partir de la boite de dialogue</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.load_file">
+<span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.load_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.load_file" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Charge le fichier dépense</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>file (str) : le fichier</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_add">
+<span class="sig-name descname"><span class="pre">on_add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_add" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Ajoute la ligne dans le dataframe et la table (model)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_colonne_clicked">
 <span class="sig-name descname"><span class="pre">on_colonne_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_colonne_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_colonne_clicked" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Fait le trie ascendant ou descendant quand on clique sur la colonne</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_date">
+<span class="sig-name descname"><span class="pre">on_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_date" title="Lien vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_delete">
+<span class="sig-name descname"><span class="pre">on_delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_delete" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Supprime la ligne du dataframe et la table si confirmation de l’utilisateur</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_filter">
+<span class="sig-name descname"><span class="pre">on_filter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_filter" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Filtre le modèle et affiche le résultat
+dans la vue (Table + Graphe)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_filter_error">
+<span class="sig-name descname"><span class="pre">on_filter_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_filter_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_filter_error" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Affiche les erreurs si le filtre n’est pas correcte</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>err (str) : description de l’erreur</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_group">
+<span class="sig-name descname"><span class="pre">on_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_group" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Groupe le modèle et affiche le résultat
+dans la vue (Table + Graphe)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_modify">
+<span class="sig-name descname"><span class="pre">on_modify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_modify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_modify" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Modifie la ligne dans le dataframe et la table si sélectionné</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_pushButton_clicked">
 <span class="sig-name descname"><span class="pre">on_pushButton_clicked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_pushButton_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_pushButton_clicked" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Chargement ou rechargement du model dans la vue</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.on_table_clicked">
 <span class="sig-name descname"><span class="pre">on_table_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.on_table_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.on_table_clicked" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Récupère la ligne sélectionnée (Vue)
+et envoie les informations dans les champs de saisie</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.refresh_counters">
+<span class="sig-name descname"><span class="pre">refresh_counters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.refresh_counters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.refresh_counters" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Met à jour les informations sur le prix et le nombre d’éléments</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.refresh_table">
-<span class="sig-name descname"><span class="pre">refresh_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.refresh_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.refresh_table" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">refresh_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.refresh_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.refresh_table" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Met à jour les informations le model avec la vue (tableView)
+et rafraîchit les informations du prix et des éléments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.save_data">
+<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.save_data" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Sauvegarde le fichier dépense à partir de la boite de dialogue</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.set_graph_type">
+<span class="sig-name descname"><span class="pre">set_graph_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.set_graph_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.set_graph_type" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Gestion des boutons pour définir le type ou types de graphes (Vue)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.set_headers">
+<span class="sig-name descname"><span class="pre">set_headers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.set_headers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.set_headers" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Définit la liste des colonnes dans le table</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DepenseMain.DepensesMain.show_graphview">
+<span class="sig-name descname"><span class="pre">show_graphview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.show_graphview"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.show_graphview" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Affiche le graphe et ajuste les paramètres des axes suivant les types de graphes</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.show_row">
 <span class="sig-name descname"><span class="pre">show_row</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#DepensesMain.show_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.DepensesMain.show_row" title="Lien vers cette définition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Affiche les données dans les champs de saisie</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="DepenseMain.DepensesMain.staticMetaObject">
 <span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;DepensesMain&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QMainWindow&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#DepenseMain.DepensesMain.staticMetaObject" title="Lien vers cette définition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="DepenseMain.is_decimal_or_integer">
+<span class="sig-prename descclassname"><span class="pre">DepenseMain.</span></span><span class="sig-name descname"><span class="pre">is_decimal_or_integer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DepenseMain.html#is_decimal_or_integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#DepenseMain.is_decimal_or_integer" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Vérifie si un nombre est un entier ou décimal.</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>s(str) : expression à vérifier</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -113,11 +223,25 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Depenses</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">DepenseMain module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PandasModel.html">PandasModel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ui_Depenses.html">Ui_Depenses module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conf.html">conf module</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Depenses</a><ul>
+      <li>Previous: <a href="modules.html" title="Chapitre précédent">Depenses</a></li>
+      <li>Next: <a href="PandasModel.html" title="Chapitre suivant">PandasModel module</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -144,7 +268,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Xen.
+      &#169;2024, Xenatronics.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>

@@ -14,6 +14,8 @@
     <script src="_static/translations.js?v=bf059b8c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Ui_Depenses module" href="Ui_Depenses.html" />
+    <link rel="prev" title="DepenseMain module" href="DepenseMain.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -37,33 +39,69 @@
 <dt class="sig sig-object py" id="PandasModel.PandasModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PandasModel.</span></span><span class="sig-name descname"><span class="pre">PandasModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel" title="Lien vers cette définition">¶</a></dt>
 <dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">QAbstractTableModel</span></code></p>
-<p>Classe PandasModel
-Args :</p>
-<blockquote>
-<div><p>QAbstractTableModel : hérite de la classe QAbstractTableModel</p>
-</div></blockquote>
+<dl class="simple">
+<dt>Variables de la classe PandasModel :</dt><dd><p>errorOccurred (Signal) : Définit un signal qui envoie un message d’erreur</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.addRow">
+<span class="sig-name descname"><span class="pre">addRow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent=&lt;PySide6.QtCore.QModelIndex(-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">0x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QObject(0x0))&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.addRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.addRow" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Ajout d’une ligne dans le dataframe et le modèle à la fois</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>row (dictionary) : données à insérer
+parent (QModelIndex) : l’index de la cellule</p>
+</dd>
+</dl>
+<p>Returns : bool</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.columnCount">
 <span class="sig-name descname"><span class="pre">columnCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.columnCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.columnCount" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Compte the nombre de colonnes
-Args :</p>
-<blockquote>
-<div><p>parent (QModelIndex) le pointeur</p>
-</div></blockquote>
+<dd><p>Compte the nombre de colonnes</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>parent (QModelIndex) le pointeur</p>
+</dd>
+</dl>
 <p>Returns : le nombre de colonnes</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.data">
 <span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">ItemDataRole.DisplayRole</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.data" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Définit les lignes à afficher suivant l’index
-Args :</p>
-<blockquote>
-<div><p>index (QModelIndex) : l’index de la cellule
+<dd><p>Définit les lignes à afficher suivant l’index</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>index (QModelIndex) : l’index de la cellule
 role : (Qt.DisplayRole) donnée de type textuelle pour l’affichage</p>
-</div></blockquote>
+</dd>
+</dl>
 <p>Returns :</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.errorOccurred">
+<span class="sig-name descname"><span class="pre">errorOccurred</span></span><a class="headerlink" href="#PandasModel.PandasModel.errorOccurred" title="Lien vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.filter" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Filtre les données selon l’expression donnée.</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>expression (str) : Une expression conditionnelle pour filtrer les données, ex., “Prix &gt; 20”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.format_display_data">
+<span class="sig-name descname"><span class="pre">format_display_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.format_display_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.format_display_data" title="Lien vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.format_text_alignment">
+<span class="sig-name descname"><span class="pre">format_text_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.format_text_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.format_text_alignment" title="Lien vers cette définition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.get_data">
@@ -76,12 +114,13 @@ Args :</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.group_by">
 <span class="sig-name descname"><span class="pre">group_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.group_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.group_by" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Tri du DataFrame par group en fonction de la colonne
-Args :</p>
-<blockquote>
-<div><p>col (int) : index (ou nom de la colonne)</p>
-</div></blockquote>
-<p>Returns : le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne</p>
+<dd><p>Tri du DataFrame par group en fonction de la colonne</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>col (int) : index (ou nom de la colonne)</p>
+</dd>
+<dt>Returns :</dt><dd><p>le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -90,47 +129,81 @@ Args :</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="PandasModel.PandasModel.load_csv">
-<span class="sig-name descname"><span class="pre">load_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.load_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.load_csv" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Chargement du fichier csv et intégration du dataframe dans le modèle
-Args :</p>
-<blockquote>
-<div><p>path (str) : le chemin du fichier csv</p>
-</div></blockquote>
+<dt class="sig sig-object py" id="PandasModel.PandasModel.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.load" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Chargement du fichier csv et intégration du dataframe dans le modèle</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>file_path (str) : le chemin du fichier de données (csv, json, xlsx)</p>
+</dd>
+</dl>
+<p>Returns : None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.per_month">
+<span class="sig-name descname"><span class="pre">per_month</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.per_month"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.per_month" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Affiche la vue en fonction des mois</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.per_year">
+<span class="sig-name descname"><span class="pre">per_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.per_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.per_year" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Affiche la vue en fonction des années</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.pivot">
+<span class="sig-name descname"><span class="pre">pivot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.pivot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.pivot" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Pivot pour agencer et afficher les données de manière plus lisible</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>data (DataFrame) : DataFrame contenant le dataframe (optionnel)
+values (Series) : détermine les valeurs du DataFrame
+index (str) : nom de la colonne qui définit l’index de notre DataFrame
+columns (str) : nom de la colonne qui définit les colonnes de notre DataFrame
+agg (str) : fonction aggregation pour calculer à partir des valeurs
+par exemple la somme, la moyenne, le nombre …</p>
+</dd>
+</dl>
 <p>Returns : None</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.removeRow">
 <span class="sig-name descname"><span class="pre">removeRow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent=&lt;PySide6.QtCore.QModelIndex(-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">0x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QObject(0x0))&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.removeRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.removeRow" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Suppression d’une ligne dans un DataFrame et dans le Modèle
-Args :</p>
-<blockquote>
-<div><p>row : numéro de la ligne dans un DataFrame
+<dd><p>Suppression d’une ligne dans un DataFrame et dans le Modèle</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>row : numéro de la ligne dans un DataFrame
 parent : pointeur pour définir l’enregistrement sur lequel on pointe</p>
-</div></blockquote>
+</dd>
+</dl>
 <p>Returns : bool</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.resume">
+<span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.resume" title="Lien vers cette définition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.rowCount">
 <span class="sig-name descname"><span class="pre">rowCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.rowCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.rowCount" title="Lien vers cette définition">¶</a></dt>
-<dd><p>Compte the nombre of lignes
-Args :</p>
-<blockquote>
-<div><p>parent (QModelIndex) le pointeur</p>
-</div></blockquote>
+<dd><p>Compte the nombre of lignes</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>parent (QModelIndex) le pointeur</p>
+</dd>
+</dl>
 <p>Returns : le nombre de lignes</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="PandasModel.PandasModel.save_to_csv">
-<span class="sig-name descname"><span class="pre">save_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.save_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.save_to_csv" title="Lien vers cette définition">¶</a></dt>
-<dd><p>On sauve toutes les informations sauf les index
-Args :</p>
-<blockquote>
-<div><p>file_path (str) : chemin du fichier csv</p>
-</div></blockquote>
+<dt class="sig sig-object py" id="PandasModel.PandasModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.save" title="Lien vers cette définition">¶</a></dt>
+<dd><p>On sauve toutes les informations s
+auf les index</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>file_path (str) : chemin du fichier csv</p>
+</dd>
+</dl>
 <p>Returns : None</p>
 </dd></dl>
 
@@ -149,8 +222,34 @@ ascending (bool, optional) : tri ascendant ou descendant</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="PandasModel.PandasModel.staticMetaObject">
-<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;PandasModel&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QAbstractTableModel&quot;:</span> <span class="pre">)</span></em><a class="headerlink" href="#PandasModel.PandasModel.staticMetaObject" title="Lien vers cette définition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">staticMetaObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PySide6.QtCore.QMetaObject(&quot;PandasModel&quot;</span> <span class="pre">inherits</span> <span class="pre">&quot;QAbstractTableModel&quot;:</span> <span class="pre">Methods:</span>&#160;&#160; <span class="pre">#76</span> <span class="pre">type=Signal,</span> <span class="pre">signature=errorOccurred(QString),</span> <span class="pre">parameters=QString</span> <span class="pre">)</span></em><a class="headerlink" href="#PandasModel.PandasModel.staticMetaObject" title="Lien vers cette définition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.to_original">
+<span class="sig-name descname"><span class="pre">to_original</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.to_original"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.to_original" title="Lien vers cette définition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Restaure et affiche les données originelles chargées lors de :</dt><dd><ul class="simple">
+<li><p>load_csv</p></li>
+<li><p>constructeur</p></li>
+</ul>
+</dd>
+</dl>
+<p>Args :</p>
+<p>Return : None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PandasModel.PandasModel.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PandasModel.html#PandasModel.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PandasModel.PandasModel.update" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Mise à jour d’une ligne dans le dataframe et le modèle</p>
+<dl class="simple">
+<dt>Args :</dt><dd><p>row_index : l’index de la ligne
+modify_value (dictionnaire) : nouvelle valeur (DataFrame) de la ligne dans le dataframe</p>
+</dd>
+</dl>
+<p>Returns : bool</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -173,11 +272,25 @@ ascending (bool, optional) : tri ascendant ou descendant</p>
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Depenses</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="DepenseMain.html">DepenseMain module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PandasModel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ui_Depenses.html">Ui_Depenses module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conf.html">conf module</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">Depenses</a><ul>
+      <li>Previous: <a href="DepenseMain.html" title="Chapitre précédent">DepenseMain module</a></li>
+      <li>Next: <a href="Ui_Depenses.html" title="Chapitre suivant">Ui_Depenses module</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -204,7 +317,7 @@ ascending (bool, optional) : tri ascendant ou descendant</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Xen.
+      &#169;2024, Xenatronics.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>

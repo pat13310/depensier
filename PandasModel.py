@@ -4,16 +4,23 @@ import pandas as pd
 from PySide6.QtCore import QAbstractTableModel, Qt, QModelIndex, Signal
 from pandas import DataFrame
 
+""" Classe PandasModel
+
+   Args :
+       QAbstractTableModel : hérite de la classe QAbstractTableModel
+   """
+
 
 class PandasModel(QAbstractTableModel):
-    """ Classe PandasModel
-    Args :
-        QAbstractTableModel : hérite de la classe QAbstractTableModel
+    """
+        Variables de la classe PandasModel :
+            errorOccurred (Signal) : Définit un signal qui envoie un message d'erreur
     """
     errorOccurred = Signal(str)  # Définit un signal qui envoie un message d'erreur
 
     def __init__(self, data=None):
         """ Constructeur pour PandasModel
+
         Args :
             data (DataFrame) : DataFrame (optionnel) initialisé à None
         """
@@ -29,6 +36,7 @@ class PandasModel(QAbstractTableModel):
 
     def rowCount(self, parent=None):
         """Compte the nombre of lignes
+
         Args :
             parent (QModelIndex) le pointeur
 
@@ -39,6 +47,7 @@ class PandasModel(QAbstractTableModel):
 
     def columnCount(self, parent=None):
         """Compte the nombre de colonnes
+
         Args :
             parent (QModelIndex) le pointeur
 
@@ -49,9 +58,11 @@ class PandasModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         """ Définit les lignes à afficher suivant l'index
+
         Args :
             index (QModelIndex) : l'index de la cellule
             role : (Qt.DisplayRole) donnée de type textuelle pour l'affichage
+
         Returns :
         """
         if not index.isValid():
@@ -96,6 +107,7 @@ class PandasModel(QAbstractTableModel):
 
     def load(self, file_path):
         """Chargement du fichier csv et intégration du dataframe dans le modèle
+
         Args :
             file_path (str) : le chemin du fichier de données (csv, json, xlsx)
 
@@ -115,14 +127,17 @@ class PandasModel(QAbstractTableModel):
         # On a converti en objet dateTime pour gérer correctement les dates
         self._data['Date'] = pd.to_datetime(self._data['Date'], format='%d/%m/%Y')
         # Juste la date pas les heures (ptdr)
+        self._data_filter=self._data.copy(deep=True)
         self.layoutChanged.emit()
         self._data_original = self._data.copy(True)  # on copie même les données
 
         for index, name in enumerate(self._data.columns):
             self.setHeaderData(index, Qt.Horizontal, name)
 
-    def save_to_csv(self, file_path):
-        """On sauve toutes les informations sauf les index
+    def save(self, file_path):
+        """On sauve toutes les informations s
+        auf les index
+
         Args :
             file_path (str) : chemin du fichier csv
 
@@ -141,13 +156,14 @@ class PandasModel(QAbstractTableModel):
 
     def addRow(self, row, parent=QModelIndex()):
         """
-        Ajout d'une ligne dans le dataframe et le modèle à la fois
-        Args :
-            row (dictionnaire) : données à insérer
-            parent (QModelIndex) : l'index de la cellule
+                Ajout d'une ligne dans le dataframe et le modèle à la fois
 
-        Returns : bool
-        """
+                Args :
+                    row (dictionary) : données à insérer
+                    parent (QModelIndex) : l'index de la cellule
+
+                Returns : bool
+                """
         self.beginInsertRows(parent, self.rowCount(parent), self.rowCount(parent))
         new_data = pd.DataFrame([row], columns=self._data.columns)
         self._data = pd.concat([self._data, new_data], ignore_index=True)
@@ -157,6 +173,7 @@ class PandasModel(QAbstractTableModel):
     def update(self, row_index, new_values):
         """
                Mise à jour d'une ligne dans le dataframe et le modèle
+
                Args :
                    row_index : l'index de la ligne
                    modify_value (dictionnaire) : nouvelle valeur (DataFrame) de la ligne dans le dataframe
@@ -179,9 +196,9 @@ class PandasModel(QAbstractTableModel):
         return True
 
     def removeRow(self, row, parent=QModelIndex()):
-
         """
         Suppression d'une ligne dans un DataFrame et dans le Modèle
+
         Args :
             row : numéro de la ligne dans un DataFrame
             parent : pointeur pour définir l'enregistrement sur lequel on pointe
@@ -218,11 +235,14 @@ class PandasModel(QAbstractTableModel):
         self.layoutChanged.emit()  # Signaler que les modifications sont terminées
 
     def group_by(self, col):
-        """ Tri du DataFrame par group en fonction de la colonne
+        """
+        Tri du DataFrame par group en fonction de la colonne
+
         Args :
             col (int) : index (ou nom de la colonne)
 
-        Returns : le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne
+        Returns :
+            le dataframe regroupé par la colonne sélectionnée et on affiche le prix par colonne
         """
         self._data = None
         self._data = self._data_original.copy(True)
@@ -245,11 +265,12 @@ class PandasModel(QAbstractTableModel):
         """
         self.layoutAboutToBeChanged.emit()  # Préparer la vue pour les changements
         try:
-            self._data = self._data_filter.copy(deep=True)
+            self._data = self._data_filter
             if len(expression) == 0:
                 return
             # Appliquer le filtre
             self._data = self._data.query(expression)
+            #self._data_filter = self._data.copy(deep=True)
         except Exception as e:
             self._data = self._data_original  # Restaurer les données originales en cas d'erreur
             self.errorOccurred.emit(f"Erreur lors du filtrage : {e}")
@@ -266,10 +287,12 @@ class PandasModel(QAbstractTableModel):
 
     def to_original(self):
         """
-        Restaure et affiche les données d'origine chargée lors de :
-            load_csv
-            constructeur
+        Restaure et affiche les données originelles chargées lors de :
+            - load_csv
+            - constructeur
+
         Args :
+
         Return : None
         """
         self.is_group = False
@@ -279,6 +302,9 @@ class PandasModel(QAbstractTableModel):
             self.layoutChanged.emit()  # Signaler que les modifications sont terminées
 
     def per_month(self):
+        """
+            Affiche la vue en fonction des mois
+        """
         self._data = None
         self._data = self._data_original.copy(True)
         self.is_group = True
@@ -291,6 +317,9 @@ class PandasModel(QAbstractTableModel):
         self.layoutChanged.emit()  # Signaler que les modifications sont terminées
 
     def per_year(self):
+        """
+            Affiche la vue en fonction des années
+        """
         self._data = None
         self._data = self._data_original.copy(True)
         self.is_group = True
@@ -310,6 +339,18 @@ class PandasModel(QAbstractTableModel):
         self.layoutChanged.emit()  # Signaler que les modifications sont terminées
 
     def pivot(self, data, values, index, columns, agg="sum"):
+        """ Pivot pour agencer et afficher les données de manière plus lisible
+
+            Args :
+                data (DataFrame) : DataFrame contenant le dataframe (optionnel)
+                values (Series) : détermine les valeurs du DataFrame
+                index (str) : nom de la colonne qui définit l'index de notre DataFrame
+                columns (str) : nom de la colonne qui définit les colonnes de notre DataFrame
+                agg (str) : fonction aggregation pour calculer à partir des valeurs
+                par exemple la somme, la moyenne, le nombre ...
+
+            Returns : None
+        """
         self.layoutAboutToBeChanged.emit()
         if data is not None:
             data = self._data_original.copy(True)
@@ -317,12 +358,31 @@ class PandasModel(QAbstractTableModel):
             # Préparation des données
             data = pd.DataFrame(data)
             data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
-            data['Année'] = data['Date'].dt.year  # Assurez-vous d'ajouter l'année comme une colonne numérique
-            # data["Total"] = data.groupby("Date").sum(axis="rows")
+            data['Année'] = data['Date'].dt.year
             # Application de la table pivot
-            # agg_func = getattr(pd.core.groupby.DataFrameGroupBy, agg) if isinstance(agg, str) else agg
             self._data = data.pivot_table(values=values, index=index, columns=columns, aggfunc=agg)
+            # On rajoute la colonne Dépense annuelle
             self._data['Dépense annuelle '] = self._data.sum(axis=1)
+            self._data_filter = self._data.copy(deep=True)
         except Exception as e:
             print("Error in processing pivot table:", e)
+        self.layoutChanged.emit()  # Signaler que les modifications sont terminées
+
+    def resume(self):
+        self.layoutAboutToBeChanged.emit()
+        self._data = self._data_original.copy(True)
+
+        # self._data['Prix_Max'] = self._data.groupby('Catégorie')['Prix'].transform('max')
+        # self._data['Prix_Min'] = self._data.groupby('Catégorie')['Prix'].transform('min')
+        # self._data['Prix_Moyen'] = self._data.groupby('Catégorie')['Prix'].transform('mean')
+
+        # Effectuer les calculs d'agrégation une seule fois et les stocker
+        agg_data = self._data.groupby('Catégorie')['Prix'].agg(['max', 'min', 'mean'])
+        agg_data.columns = ['Prix_Max', 'Prix_Min', 'Prix_Moyen']
+
+        # Joindre les résultats d'agrégation avec les données originales sans duplication inutile
+        self._data = self._data.join(agg_data, on='Catégorie')
+
+        self._data_filter = self._data.copy(deep=True)
+
         self.layoutChanged.emit()  # Signaler que les modifications sont terminées

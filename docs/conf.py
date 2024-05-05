@@ -9,7 +9,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 project = 'Dépensier'
-copyright = '2024, Xen'
+copyright = '2024, Xenatronics'
 author = 'Xen'
 release = '1.0'
 

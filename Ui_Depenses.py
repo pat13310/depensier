@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'depensesbYcBqU.ui'
+## Form generated from reading UI file 'depensesAIjGnk.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.0
 ##
@@ -33,10 +33,10 @@ class Ui_Depenses(object):
         self.actionSauver.setObjectName(u"actionSauver")
         self.actionCSV = QAction(Depenses)
         self.actionCSV.setObjectName(u"actionCSV")
-        self.actionTexte = QAction(Depenses)
-        self.actionTexte.setObjectName(u"actionTexte")
-        self.actionPDF = QAction(Depenses)
-        self.actionPDF.setObjectName(u"actionPDF")
+        self.actionJSON = QAction(Depenses)
+        self.actionJSON.setObjectName(u"actionJSON")
+        self.actionExcel = QAction(Depenses)
+        self.actionExcel.setObjectName(u"actionExcel")
         self.centralwidget = QWidget(Depenses)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_2 = QVBoxLayout(self.centralwidget)
@@ -442,8 +442,8 @@ class Ui_Depenses(object):
         self.menuFichier.addAction(self.actionSauver)
         self.menuFichier.addAction(self.menuExporter_en.menuAction())
         self.menuExporter_en.addAction(self.actionCSV)
-        self.menuExporter_en.addAction(self.actionTexte)
-        self.menuExporter_en.addAction(self.actionPDF)
+        self.menuExporter_en.addAction(self.actionJSON)
+        self.menuExporter_en.addAction(self.actionExcel)
 
         self.retranslateUi(Depenses)
 
@@ -455,8 +455,8 @@ class Ui_Depenses(object):
         self.actionOuvrir.setText(QCoreApplication.translate("Depenses", u"Ouvrir", None))
         self.actionSauver.setText(QCoreApplication.translate("Depenses", u"Sauver", None))
         self.actionCSV.setText(QCoreApplication.translate("Depenses", u"CSV", None))
-        self.actionTexte.setText(QCoreApplication.translate("Depenses", u"Texte", None))
-        self.actionPDF.setText(QCoreApplication.translate("Depenses", u"PDF", None))
+        self.actionJSON.setText(QCoreApplication.translate("Depenses", u"JSON", None))
+        self.actionExcel.setText(QCoreApplication.translate("Depenses", u"Excel", None))
         self.pushButton.setText(QCoreApplication.translate("Depenses", u"Charger", None))
         self.pushButton_2.setText(QCoreApplication.translate("Depenses", u"Sauver", None))
         self.pbAdd.setText(QCoreApplication.translate("Depenses", u"Ajouter", None))

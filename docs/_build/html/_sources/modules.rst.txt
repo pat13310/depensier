@@ -6,6 +6,5 @@ Depenses
 
    DepenseMain
    PandasModel
-   PandasTreeModel
    Ui_Depenses
    conf

@@ -32,111 +32,188 @@
             
   <h1>Code source de DepenseMain</h1><div class="highlight"><pre>
 <span></span><span class="c1"># Ensure that you import the Ui_Depenses class from the correct module</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span>
-<span class="kn">from</span> <span class="nn">PySide6.QtGui</span> <span class="kn">import</span> <span class="n">QStandardItemModel</span><span class="p">,</span> <span class="n">QStandardItem</span>
-<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMessageBox</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QDate</span><span class="p">,</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtGui</span> <span class="kn">import</span> <span class="n">QStandardItemModel</span><span class="p">,</span> <span class="n">QStandardItem</span><span class="p">,</span> <span class="n">QPixmap</span>
+<span class="kn">from</span> <span class="nn">PySide6.QtWidgets</span> <span class="kn">import</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QFileDialog</span><span class="p">,</span> <span class="n">QTableView</span><span class="p">,</span> <span class="n">QPushButton</span>
 
+<span class="kn">from</span> <span class="nn">ColonneType</span> <span class="kn">import</span> <span class="n">ColonneType</span><span class="p">,</span> <span class="n">GraphType</span>
 <span class="kn">from</span> <span class="nn">PandasModel</span> <span class="kn">import</span> <span class="n">PandasModel</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.dates</span> <span class="k">as</span> <span class="nn">mdates</span>
+<span class="kn">from</span> <span class="nn">pandas.plotting</span> <span class="kn">import</span> <span class="n">register_matplotlib_converters</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">register_matplotlib_converters</span><span class="p">()</span>
+
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
 <span class="kn">from</span> <span class="nn">PandasTreeModel</span> <span class="kn">import</span> <span class="n">PandasTreeModel</span>
 <span class="kn">from</span> <span class="nn">Ui_Depenses</span> <span class="kn">import</span> <span class="n">Ui_Depenses</span>
+
+
+<div class="viewcode-block" id="is_decimal_or_integer">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.is_decimal_or_integer">[docs]</a>
+<span class="k">def</span> <span class="nf">is_decimal_or_integer</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Vérifie si un nombre est un entier ou décimal.</span>
+
+<span class="sd">        Args :</span>
+<span class="sd">            s(str) : expression à vérifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^-?\d+(\.\d+)?$&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span></div>
+
 
 
 <div class="viewcode-block" id="DepensesMain">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain">[docs]</a>
 <span class="k">class</span> <span class="nc">DepensesMain</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">,</span> <span class="n">Ui_Depenses</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructeur de la classe DepensesMain</span>
+<span class="sd">        On initialise les variables et on connecte les évènements des objets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="c1"># Set up the UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matplot</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">row</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_group</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_sort</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># connexion aux slots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pushButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_pushButton_clicked</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pbDelete</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_selected_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbAdd</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_add</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbModify</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_modify</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbDelete</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_delete</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">sectionClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_colonne_clicked</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_table_clicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_group</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbFilter</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionOuvrir</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSauver</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">QStandardItemModel</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_graph_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="p">,</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">POINT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_graph_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="p">,</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">LINE</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_graph_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="p">,</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">BAR</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPie</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_graph_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPie</span><span class="p">,</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">QStandardItemModel</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_table</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">PandasModel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">errorOccurred</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter_error</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span> <span class="o">=</span> <span class="n">PandasTreeModel</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">QDate</span><span class="o">.</span><span class="n">currentDate</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">setMaximumDate</span><span class="p">(</span><span class="n">QDate</span><span class="o">.</span><span class="n">currentDate</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">dateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_date</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">:</span> <span class="n">GraphType</span> <span class="o">=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">LINE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span><span class="p">:</span> <span class="n">ColonneType</span> <span class="o">=</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">SANS</span>
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(120, 120, 120); color:white;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_crud</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DepensesMain.init_table">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.init_table">[docs]</a>
     <span class="k">def</span> <span class="nf">init_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="s2">&quot;Date&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="s2">&quot;Catégorie&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="s2">&quot;Libellé&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setHeaderData</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span> <span class="s2">&quot;Prix&quot;</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Définit la sélection sur la ligne entière (Vue)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setSelectionBehavior</span><span class="p">(</span><span class="n">QTableView</span><span class="o">.</span><span class="n">SelectRows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setSelectionMode</span><span class="p">(</span><span class="n">QTableView</span><span class="o">.</span><span class="n">SingleSelection</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DepensesMain.on_colonne_clicked">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_colonne_clicked">[docs]</a>
     <span class="k">def</span> <span class="nf">on_colonne_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Fait le trie ascendant ou descendant quand on clique sur la colonne</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">sortIndicatorOrder</span><span class="p">()</span>
-        <span class="c1"># column_name = self.model.headerData(index, Qt.Horizontal, Qt.DisplayRole)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_sort</span><span class="p">)</span>
-
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Clicked on header of column </span><span class="si">{</span><span class="n">index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, Sort order: </span><span class="si">{</span><span class="s1">&#39;Ascending&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Qt</span><span class="o">.</span><span class="n">AscendingOrder</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Descending&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_table</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DepensesMain.load_csv">
-<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.load_csv">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span></div>
+<div class="viewcode-block" id="DepensesMain.set_headers">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.set_headers">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Définit la liste des colonnes dans le table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">!=</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE_DETAILS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">110</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">155</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">widget_graph</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setColumnWidth</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">widget_graph</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.load_file">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.load_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Charge le fichier dépense</span>
+
+<span class="sd">        Args :</span>
+<span class="sd">            file (str) : le fichier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_table</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_headers</span><span class="p">()</span>
+        <span class="c1"># On renseigne le combo box</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="s2">&quot;Catégorie&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">ColonneType</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">column</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DepensesMain.refresh_table">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.refresh_table">[docs]</a>
-    <span class="k">def</span> <span class="nf">refresh_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">refresh_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Met à jour les informations le model avec la vue (tableView)</span>
+<span class="sd">        et rafraîchit les informations du prix et des éléments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Calcul la somme avec pandas</span>
-        <span class="n">prix_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="c1"># Met à jour le modèle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
-        <span class="c1"># Affiche la somme et on arrondi</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">txtTotal</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total des dépenses : </span><span class="si">{</span><span class="n">prix_total</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> €&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.refresh_counters">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.refresh_counters">[docs]</a>
+    <span class="k">def</span> <span class="nf">refresh_counters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Met à jour les informations sur le prix et le nombre d&#39;éléments&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE_DETAILS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">prix_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtTotal</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Total des dépenses : </span><span class="si">{</span><span class="n">prix_total</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> €   -  Nombre d&#39;éléments : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">txtTotal</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;font: bold;&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="DepensesMain.group_by">
-<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.group_by">[docs]</a>
-    <span class="k">def</span> <span class="nf">group_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">column</span><span class="p">)[</span><span class="s1">&#39;Prix&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_table</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df_group</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DepensesMain.on_pushButton_clicked">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_pushButton_clicked">[docs]</a>
     <span class="k">def</span> <span class="nf">on_pushButton_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Handle the button click event</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Button was clicked!&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;donnees.csv&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="DepensesMain.add_data">
-<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.add_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">price</span><span class="p">):</span>
-        <span class="c1"># Créer une nouvelle ligne de données</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">QStandardItem</span><span class="p">(</span><span class="n">date</span><span class="p">),</span>
-            <span class="n">QStandardItem</span><span class="p">(</span><span class="n">category</span><span class="p">),</span>
-            <span class="n">QStandardItem</span><span class="p">(</span><span class="n">label</span><span class="p">),</span>
-            <span class="n">QStandardItem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">price</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> €&quot;</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="c1"># Ajouter la ligne au modèle</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chargement ou rechargement du model dans la vue&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s2">&quot;donnees.csv&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DepensesMain.on_table_clicked">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_table_clicked">[docs]</a>
     <span class="k">def</span> <span class="nf">on_table_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Récupère la ligne sélectionnée (Vue)</span>
+<span class="sd">        et envoie les informations dans les champs de saisie &quot;&quot;&quot;</span>
         <span class="c1"># index est de type QModelIndex</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">row</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>  <span class="c1"># Récupère l&#39;indice de la ligne cliquée</span>
 
@@ -150,13 +227,69 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span> <span class="o">=</span> <span class="n">row_data</span>
 
         <span class="c1"># Pour déboguer ou afficher les informations collectées</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Complete Row Data:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">)</span>
+        <span class="c1"># print(&quot;Complete Row Data:&quot;, self.selected_item)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_row</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="DepensesMain.delete_selected_row">
-<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.delete_selected_row">[docs]</a>
-    <span class="k">def</span> <span class="nf">delete_selected_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DepensesMain.is_valide_field">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.is_valide_field">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_valide_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; vérifie que les champs sont valides &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtPrice</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtDesignation</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_decimal_or_integer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtPrice</span><span class="o">.</span><span class="n">text</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">is_decimal_or_integer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtDesignation</span><span class="o">.</span><span class="n">text</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_add">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_add">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Ajoute la ligne dans le dataframe et la table (model) &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valide_field</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Texte&quot;</span>
+        <span class="n">libelle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtDesignation</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtPrice</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span> <span class="s2">&quot;Catégorie&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span> <span class="s2">&quot;Libellé&quot;</span><span class="p">:</span> <span class="n">libelle</span><span class="p">,</span> <span class="s2">&quot;Prix&quot;</span><span class="p">:</span> <span class="n">price</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">)</span>
+        <span class="c1"># Faites défiler jusqu&#39;au bas du QTableView</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">scrollToBottom</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_modify">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_modify">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_modify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Modifie la ligne dans le dataframe et la table si sélectionné&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_valide_field</span><span class="p">():</span>
+            <span class="n">modify_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Date&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">text</span><span class="p">(),</span>
+                            <span class="s2">&quot;Catégorie&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">currentText</span><span class="p">(),</span>
+                            <span class="s2">&quot;Libellé&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">txtDesignation</span><span class="o">.</span><span class="n">text</span><span class="p">(),</span>
+                            <span class="s2">&quot;Prix&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtPrice</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+                            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">modify_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_delete">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_delete">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Supprime la ligne du dataframe et la table si confirmation de l&#39;utilisateur&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">:</span>
             <span class="n">reply</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">question</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Confirmation de la suppression&#39;</span><span class="p">,</span>
                                          <span class="sa">f</span><span class="s2">&quot;Etes-vous sûr de supprimer cet enregistrement  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="si">}</span><span class="s2">?&quot;</span><span class="p">,</span>
@@ -167,17 +300,269 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">tableView</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">row</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Information&#39;</span><span class="p">,</span> <span class="s1">&#39;No row selected.&#39;</span><span class="p">)</span></div>
+            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Information&#39;</span><span class="p">,</span> <span class="s1">&#39;Pas de sélection.&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DepensesMain.show_row">
 <a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.show_row">[docs]</a>
     <span class="k">def</span> <span class="nf">show_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Affiche les données dans les champs de saisie &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">is_group</span><span class="p">:</span>
+            <span class="k">return</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">txtDesignation</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">txtPrice</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">setEditText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+            <span class="n">selected_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># On vérifie que le texte existe bien dans la liste</span>
+            <span class="k">if</span> <span class="n">selected_category</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">itemText</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">count</span><span class="p">())]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmbCategory</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="n">selected_category</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_group">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_group">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Groupe le modèle et affiche le résultat</span>
+<span class="sd">                   dans la vue (Table + Graphe)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">currentData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">SANS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">widget_crud</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">widget_crud</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">txtFilter</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">SANS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to_original</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">DATE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">CATEGORIE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">LIBELLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">group_by</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">MOIS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">per_month</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">per_year</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">column_type</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE_DETAILS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;Prix&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="s2">&quot;Année&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;Catégorie&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_graphview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">currentData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_filter">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_filter">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Filtre le modèle et affiche le résultat</span>
+<span class="sd">            dans la vue (Table + Graphe)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if len(self.txtFilter.text().strip()) == 0:</span>
+        <span class="c1">#    self.model.to_original()</span>
+        <span class="c1"># else:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">txtFilter</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_graphview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">currentData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_filter_error">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_filter_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_filter_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Affiche les erreurs si le filtre n&#39;est pas correcte</span>
+
+<span class="sd">            Args :</span>
+<span class="sd">                err (str) : description de l&#39;erreur</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">QMessageBox</span><span class="o">.</span><span class="n">information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Information&#39;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.on_date">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.on_date">[docs]</a>
+    <span class="k">def</span> <span class="nf">on_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_date</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.show_graphview">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.show_graphview">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_graphview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Affiche le graphe et ajuste les paramètres des axes suivant les types de graphes&quot;&quot;&quot;</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>  <span class="c1"># Taille du graphe</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>  <span class="c1"># Ajuster la marge inférieure</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">LINE</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>  <span class="c1"># Rotation à 45 degrés et alignement à droite</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;xtick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;ytick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">POINT</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>  <span class="c1"># Rotation à 45 degrés et alignement à droite</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;xtick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;ytick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">DATE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">ColonneType</span><span class="o">.</span><span class="n">DATE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prix&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">AutoDateLocator</span><span class="p">(</span><span class="n">maxticks</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>  <span class="c1"># Limiter le nombre de marqueurs de date</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">))</span>  <span class="c1"># Format de date</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">DATE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%m-%Y&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">DATE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">CATEGORIE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">CATEGORIE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">ColonneType</span><span class="o">.</span><span class="n">CATEGORIE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prix&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">LIBELLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">LIBELLE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">ColonneType</span><span class="o">.</span><span class="n">LIBELLE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prix&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">MOIS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mois&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mois&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">MOIS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">ColonneType</span><span class="o">.</span><span class="n">MOIS</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prix&#39;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mdates</span><span class="o">.</span><span class="n">DateFormatter</span><span class="p">(</span><span class="s1">&#39;%B %Y&#39;</span><span class="p">))</span>  <span class="c1"># Format de date</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mois&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mois&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-%Y&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">MOIS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_graph</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Prix&#39;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">SANS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">sort</span> <span class="o">==</span> <span class="n">ColonneType</span><span class="o">.</span><span class="n">ANNEE_DETAILS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QPixmap</span><span class="p">()</span>
+        <span class="n">pixmap</span><span class="o">.</span><span class="n">loadFromData</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="s1">&#39;PNG&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graphView</span><span class="o">.</span><span class="n">setPixmap</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.draw_graph">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.draw_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">colonne_type</span><span class="p">:</span> <span class="n">ColonneType</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Affiche les graphes</span>
+
+<span class="sd">            Args :</span>
+<span class="sd">                data (DataFrame) : données pour afficher les graphes</span>
+
+<span class="sd">                colonne_type (ColonneType) : le type de colonne à traiter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="o">.</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">BAR</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="c1"># data.plot(kind=&#39;bar&#39;, color=&#39;skyblue&#39;)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">colonne_type</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Prix&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;skyblue&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>  <span class="c1"># Rotation des étiquettes de l&#39;axe des x pour une meilleure lisibilité</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>  <span class="c1"># Ajout de grille pour une meilleure visibilité des valeurs</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="o">.</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">LINE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">colonne_type</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Prix&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="o">.</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">POINT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">colonne_type</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Prix&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span><span class="o">.</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Prix&#39;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">colonne_type</span><span class="o">.</span><span class="n">value</span><span class="p">],</span> <span class="n">autopct</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%1.1f%%</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">startangle</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+            <span class="c1"># plt.title(&#39;Répartition des dépenses par catégorie&#39;)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>  <span class="c1"># Assure que le pie chart est un cercle</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.load_data">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.load_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Charge le fichier dépense à partir de la boite de dialogue&quot;&quot;&quot;</span>
+        <span class="n">file_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Ouvrir le fichier dépenses&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                   <span class="s2">&quot;Fichier CSV (*.csv);;Fichier JSON (*.json);;Fichier Excel (*.xlsx)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DepensesMain.save_data">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.save_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Sauvegarde le fichier dépense à partir de la boite de dialogue</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ouvre une boîte de dialogue pour sauvegarder un fichier</span>
+        <span class="n">file_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Sauvegarder le fichier dépenses&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fichier sauvegardé : </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+            <span class="c1"># Vous pouvez ici ajouter la logique pour sauvegarder les données dans le fichier</span>
+
+<div class="viewcode-block" id="DepensesMain.set_graph_type">
+<a class="viewcode-back" href="../DepenseMain.html#DepenseMain.DepensesMain.set_graph_type">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_graph_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">button</span><span class="p">,</span> <span class="n">graph_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Gestion des boutons pour définir le type ou types de graphes (Vue)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">NONE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">|=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">POINT</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(120, 120, 120); color:white;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">|=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">LINE</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(120, 120, 120); color:white;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">|=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">BAR</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(120, 120, 120); color:white;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPie</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_type</span> <span class="o">=</span> <span class="n">GraphType</span><span class="o">.</span><span class="n">PIE</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPie</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(120, 120, 120); color:white;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphLine</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPoint</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphHisto</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pbGraphPie</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgb(200, 200, 200); color:black;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_graphview</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmbGroup</span><span class="o">.</span><span class="n">currentData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_counters</span><span class="p">()</span></div>
 </div>
 
 
@@ -206,6 +591,10 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Depenses</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
@@ -239,7 +628,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2024, Xen.
+      &#169;2024, Xenatronics.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>

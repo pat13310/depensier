@@ -1,4 +1,6 @@
 # Ensure that you import the Ui_Depenses class from the correct module
+import locale
+import os
 import re
 import sys
 
@@ -6,7 +8,7 @@ from PySide6.QtCore import Qt, QDate, QSize
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QPixmap
 from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox, QFileDialog, QTableView, QPushButton
 
-from ColonneType import ColonneType, GraphType
+from ColonneType import ColonneType, GraphType, FileFormatType
 from PandasModel import PandasModel
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -20,14 +22,26 @@ from PandasTreeModel import PandasTreeModel
 from Ui_Depenses import Ui_Depenses
 
 
-def is_decimal_or_integer(s):
+def is_decimal_or_integer(s: str):
+    """ Vérifie si un nombre est un entier ou décimal.
+
+        Args :
+            s(str) : expression à vérifier
+    """
+
     return bool(re.match(r'^-?\d+(\.\d+)?$', s))
 
 
 class DepensesMain(QMainWindow, Ui_Depenses):
+
     def __init__(self):
+        """
+        Constructeur de la classe DepensesMain
+        On initialise les variables et on connecte les évènements des objets
+        """
         super().__init__()
         # Set up the UI
+        self.file_base = None
         self.matplot = None
         self.row = None
         self.setupUi(self)
@@ -38,10 +52,15 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.pbDelete.clicked.connect(self.on_delete)
         self.tableView.horizontalHeader().sectionClicked.connect(self.on_colonne_clicked)
         self.tableView.clicked.connect(self.on_table_clicked)
+
         self.cmbGroup.currentIndexChanged.connect(self.on_group)
         self.pbFilter.clicked.connect(self.on_filter)
+
         self.actionOuvrir.triggered.connect(self.load_data)
         self.actionSauver.triggered.connect(self.save_data)
+        self.actionCSV.triggered.connect(lambda: self.export_data(FileFormatType.CSV))
+        self.actionJSON.triggered.connect(lambda: self.export_data(FileFormatType.JSON))
+        self.actionExcel.triggered.connect(lambda: self.export_data(FileFormatType.EXCEL))
 
         self.pbGraphPoint.clicked.connect(lambda: self.set_graph_type(self.pbGraphPoint, GraphType.POINT))
         self.pbGraphLine.clicked.connect(lambda: self.set_graph_type(self.pbGraphLine, GraphType.LINE))
@@ -65,32 +84,54 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.pbGraphLine.setChecked(True)
         self.widget_crud.setVisible(False)
 
+        locale.setlocale(locale.LC_TIME, 'fr_FR')  # On localise sur la France
+
     def init_table(self):
+        """
+        Définit la sélection sur la ligne entière (Vue)
+        """
         self.tableView.setSelectionBehavior(QTableView.SelectRows)
         self.tableView.setSelectionMode(QTableView.SingleSelection)
 
     def on_colonne_clicked(self, index):
+        """
+            Fait le trie ascendant ou descendant quand on clique sur la colonne
+        """
         order = self.tableView.horizontalHeader().sortIndicatorOrder()
         self.model.sort(index, order)
         self.refresh_table()
 
     def set_headers(self):
-        if self.column_type != ColonneType.ANNEE_DETAILS.value:
+        """
+        Définit la liste des colonnes dans la table
+        """
+        if self.column_type != ColonneType.ANNEE_DETAILS.value and self.column_type != ColonneType.RESUME.value:
             self.tableView.setColumnWidth(1, 110)
             self.tableView.setColumnWidth(2, 155)
             self.tableView.setColumnWidth(3, 100)
             self.tableView.setMinimumSize(QSize(600, 300))
             self.widget_graph.setVisible(True)
 
+        elif self.column_type == ColonneType.RESUME.value:
+            for i in range(len(self.model.get_data().columns)):
+                self.tableView.setColumnWidth(i, 120)
+                self.widget_graph.setVisible(False)
+                self.tableView.setMinimumSize(QSize(1000, 300))
+
         else:
-            count = len(self.model.get_data().columns)
             for i in range(len(self.model.get_data().columns)):
                 self.tableView.setColumnWidth(i, 120)
 
             self.widget_graph.setVisible(False)
             self.tableView.setMinimumSize(QSize(1000, 300))
 
-    def load_csv(self, file: str):
+    def load_file(self, file: str):
+        """
+        Charge le fichier dépense
+
+        Args :
+            file (str) : le fichier
+        """
         self.model.load(file)
         self.refresh_table()
         self.set_headers()
@@ -104,13 +145,16 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             self.cmbGroup.addItem(column.name, column.value)
 
     def refresh_table(self):
+        """ Met à jour les informations le model avec la vue (tableView)
+        et rafraîchit les informations du prix et des éléments
+        """
         # Calcul la somme avec pandas
-        prix_total = self.model.get_data()['Prix'].sum()
         # Met à jour le modèle
         self.tableView.setModel(self.model)
         self.refresh_counters()
 
     def refresh_counters(self):
+        """ Met à jour les informations sur le prix et le nombre d'éléments"""
         if self.column_type == ColonneType.ANNEE_DETAILS.value:
             return
         prix_total = self.model.get_data()['Prix'].sum()
@@ -119,10 +163,12 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.txtTotal.setStyleSheet("font: bold;")
 
     def on_pushButton_clicked(self):
-        # Handle the button click event
-        self.load_csv("donnees.csv")
+        """Chargement ou rechargement du model dans la vue"""
+        self.load_file("donnees.csv")
 
     def on_table_clicked(self, index):
+        """ Récupère la ligne sélectionnée (Vue)
+        et envoie les informations dans les champs de saisie """
         # index est de type QModelIndex
         self.row = index.row()  # Récupère l'indice de la ligne cliquée
 
@@ -140,6 +186,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.show_row()
 
     def is_valide_field(self):
+        """ vérifie que les champs sont valides """
         if self.model.get_data() is None:
             return False
 
@@ -158,7 +205,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         return True
 
     def on_add(self):
-
+        """ Ajoute la ligne dans le dataframe et la table (model) """
         if not self.is_valide_field():
             return
 
@@ -174,7 +221,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.refresh_counters()
 
     def on_modify(self):
-
+        """ Modifie la ligne dans le dataframe et la table si sélectionné"""
         if self.selected_item and self.is_valide_field():
             modify_value = {"Date": self.date.text(),
                             "Catégorie": self.cmbCategory.currentText(),
@@ -185,6 +232,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             self.refresh_counters()
 
     def on_delete(self):
+        """ Supprime la ligne du dataframe et la table si confirmation de l'utilisateur"""
         if self.selected_item:
             reply = QMessageBox.question(self, 'Confirmation de la suppression',
                                          f"Etes-vous sûr de supprimer cet enregistrement  {self.selected_item}?",
@@ -200,6 +248,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             QMessageBox.information(self, 'Information', 'Pas de sélection.')
 
     def show_row(self):
+        """ Affiche les données dans les champs de saisie """
         if self.model.is_group:
             return
         if self.selected_item:
@@ -211,6 +260,9 @@ class DepensesMain(QMainWindow, Ui_Depenses):
                 self.cmbCategory.setCurrentText(selected_category)
 
     def on_group(self, index):
+        """ Groupe le modèle et affiche le résultat
+                   dans la vue (Table + Graphe)
+        """
         if self.model is None:
             return
         self.column_type = self.cmbGroup.currentData(Qt.UserRole)
@@ -244,21 +296,26 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         self.refresh_counters()
 
     def on_filter(self):
-        # if len(self.txtFilter.text().strip()) == 0:
-        #    self.model.to_original()
-        # else:
+        """ Filtre le modèle et affiche le résultat
+            dans la vue (Table + Graphe)
+        """
         self.model.filter(self.txtFilter.text())
-
         self.show_graphview(self.cmbGroup.currentData(Qt.UserRole))
         self.refresh_counters()
 
     def on_filter_error(self, err):
+        """ Affiche les erreurs si le filtre n'est pas correcte
+
+            Args :
+                err (str) : description de l'erreur
+        """
         QMessageBox.information(self, 'Information', err)
 
     def on_date(self, new_date):
         pass
 
     def show_graphview(self, sort):
+        """ Affiche le graphe et ajuste les paramètres des axes suivant les types de graphes"""
 
         data = self.model.get_data()
 
@@ -282,20 +339,20 @@ class DepensesMain(QMainWindow, Ui_Depenses):
                 plt.ylabel('Prix')
                 ax.xaxis.set_major_locator(mdates.AutoDateLocator(maxticks=8))  # Limiter le nombre de marqueurs de date
                 ax.xaxis.set_major_formatter(mdates.DateFormatter('%B %Y'))  # Format de date
-                self.draw_graph(data, ColonneType.DATE, self.graph_type)
+                self.draw_graph(data, ColonneType.DATE)
             else:
                 df = pd.DataFrame(data)
                 df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
-                self.draw_graph(df, ColonneType.DATE, self.graph_type)
+                self.draw_graph(df, ColonneType.DATE)
 
         elif sort == ColonneType.CATEGORIE.value:
-            self.draw_graph(data, ColonneType.CATEGORIE, self.graph_type)
+            self.draw_graph(data, ColonneType.CATEGORIE)
             if not self.graph_type & GraphType.PIE:
                 plt.xlabel(ColonneType.CATEGORIE.value)
                 plt.ylabel('Prix')
 
         elif sort == ColonneType.LIBELLE.value:
-            self.draw_graph(data, ColonneType.LIBELLE, self.graph_type)
+            self.draw_graph(data, ColonneType.LIBELLE)
             if not self.graph_type & GraphType.PIE:
                 plt.xlabel(ColonneType.LIBELLE.value)
                 plt.ylabel('Prix')
@@ -303,7 +360,7 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         elif sort == ColonneType.MOIS.value:
             df = pd.DataFrame(data)
             df['Mois'] = pd.to_datetime(df['Mois'].dt.to_timestamp())
-            self.draw_graph(df, ColonneType.MOIS, self.graph_type)
+            self.draw_graph(df, ColonneType.MOIS)
             if not self.graph_type & GraphType.PIE:
                 plt.xlabel(ColonneType.MOIS.value)
                 plt.ylabel('Prix')
@@ -311,20 +368,19 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             else:
                 df = pd.DataFrame(data)
                 df['Mois'] = df['Mois'].dt.strftime('%m-%Y')
-                self.draw_graph(df, ColonneType.MOIS, self.graph_type)
+                self.draw_graph(df, ColonneType.MOIS)
 
         elif sort == ColonneType.ANNEE.value:
-            self.draw_graph(data, ColonneType.ANNEE, self.graph_type)
+            self.draw_graph(data, ColonneType.ANNEE)
             plt.xlabel(ColonneType.ANNEE.value)
             if not self.graph_type & GraphType.PIE:
                 plt.ylabel('Prix')
                 plt.xticks(rotation=0, ha='center')
 
         elif sort == ColonneType.SANS.value:
-            plt.figure(figsize=(4, 4))
-
-        elif sort == ColonneType.ANNEE_DETAILS.value:
-            plt.figure(figsize=(2, 2))
+            pass
+        elif sort == ColonneType.RESUME.value:
+            self.model.resume()
 
         buf = BytesIO()
         plt.savefig(buf, format='png')
@@ -334,8 +390,17 @@ class DepensesMain(QMainWindow, Ui_Depenses):
         pixmap = QPixmap()
         pixmap.loadFromData(buf.getvalue(), 'PNG')
         self.graphView.setPixmap(pixmap)
+        plt.close('all')
 
-    def draw_graph(self, data, colonne_type: ColonneType, graph_type: GraphType):
+    def draw_graph(self, data, colonne_type: ColonneType):
+        """ Affiche les graphes
+
+            Args :
+                data (DataFrame) : données pour afficher les graphes
+
+                colonne_type (ColonneType) : le type de colonne à traiter
+        """
+
         if self.graph_type.value & GraphType.BAR.value:
             # data.plot(kind='bar', color='skyblue')
             plt.bar(data[colonne_type.value], data["Prix"], color='skyblue')
@@ -351,24 +416,41 @@ class DepensesMain(QMainWindow, Ui_Depenses):
             plt.figure(figsize=(5, 5))
             plt.pie(data['Prix'], labels=data[colonne_type.value], autopct='%1.1f%%', startangle=180)
             # plt.title('Répartition des dépenses par catégorie')
-            plt.axis('equal')  # Assure que le pie chart est un cercle
+            plt.axis('equal')  # Assure que le 'pie chart' est un cercle
 
     def load_data(self):
+        """ Charge le fichier dépense à partir de la boite de dialogue"""
         file_name, _ = QFileDialog.getOpenFileName(None, "Ouvrir le fichier dépenses", "",
                                                    "Fichier CSV (*.csv);;Fichier JSON (*.json);;Fichier Excel (*.xlsx)")
         if file_name:
-            self.load_csv(file_name)
+            self.load_file(file_name)
+            self.file_base = os.path.basename(file_name).split(".")
+            self.file_base = self.file_base[0]
 
     def save_data(self):
+        """
+            Sauvegarde le fichier dépense à partir de la boite de dialogue
+
+        """
         # Ouvre une boîte de dialogue pour sauvegarder un fichier
         file_name, _ = QFileDialog.getSaveFileName(self, "Sauvegarder le fichier dépenses")
         if file_name:
-            self.model.save_to_csv(file_name)
+            self.model.save(file_name)
+            self.file_base = os.path.basename(file_name).split(".")
+            self.file_base = self.file_base[0]
             print(f"Fichier sauvegardé : {file_name}")
-            # Vous pouvez ici ajouter la logique pour sauvegarder les données dans le fichier
+
+    def export_data(self, formatType: FileFormatType):
+        if formatType == FileFormatType.CSV:
+            self.model.save(f"{self.file_base}.csv")
+        elif formatType == FileFormatType.JSON:
+            self.model.save(f"{self.file_base}.json")
+        elif formatType == FileFormatType.EXCEL:
+            self.model.save(f"{self.file_base}.xlsx")
 
     def set_graph_type(self, button, graph_type):
-
+        """ Gestion des boutons pour définir le type ou types de graphes (Vue)
+        """
         self.graph_type = GraphType.NONE
         if self.pbGraphPoint.isChecked():
             self.graph_type |= GraphType.POINT
